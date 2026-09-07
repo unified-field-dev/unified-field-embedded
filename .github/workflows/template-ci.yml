@@ -1,0 +1,248 @@
+# Upstream template CI: generate a scratch host, then run the flat host gates.
+# Ignored by cargo-generate so customer hosts do not inherit this workflow.
+name: Template CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_BUILD_JOBS: 1
+  CARGO_INCREMENTAL: 0
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  RUST_BACKTRACE: 1
+  PHOTON_ALLOW_DEV_TRANSPORT_KEY: "1"
+  PHOTON_TRANSPORT_KEY: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+  PROJECT_NAME: my-uf-app
+  APP_TITLE: My App
+  GH_OWNER: unified-field-dev
+  KEEP_DEST: "1"
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    outputs:
+      gen_root: ${{ steps.gen.outputs.gen_root }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: dtolnay/rust-toolchain@2c7215f132e9ebf062739d9130488b56d53c060c # master (pin)
+        with:
+          toolchain: nightly
+      - name: Install cargo-generate
+        run: cargo install cargo-generate --locked
+      - name: Generate scratch host
+        id: gen
+        run: |
+          DEST="${RUNNER_TEMP}/uf-gen"
+          mkdir -p "$DEST"
+          DEST="$DEST" KEEP_DEST=1 bash scripts/verify-template-generate.sh
+          GEN_ROOT="$(cat "${DEST}/.gen_root_path")"
+          echo "gen_root=$GEN_ROOT" >> "$GITHUB_OUTPUT"
+          # Prefer the shipped (Liquid-substituted) lockfile. Only regenerate if missing.
+          if [[ ! -f "$GEN_ROOT/Cargo.lock" ]]; then
+            (cd "$GEN_ROOT" && cargo generate-lockfile)
+          fi
+          if [[ -d "$GEN_ROOT/end2end" && ! -f "$GEN_ROOT/end2end/package-lock.json" ]]; then
+            (cd "$GEN_ROOT/end2end" && npm install --package-lock-only)
+          fi
+          tar -C "$(dirname "$GEN_ROOT")" -czf "${RUNNER_TEMP}/gen-host.tgz" "$(basename "$GEN_ROOT")"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: generated-host
+          path: ${{ runner.temp }}/gen-host.tgz
+          retention-days: 1
+
+  fmt:
+    needs: generate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: generated-host
+          path: ${{ runner.temp }}
+      - name: Unpack generated host
+        run: |
+          mkdir -p "$HOME/gen"
+          tar -xzf "${RUNNER_TEMP}/gen-host.tgz" -C "$HOME/gen"
+          echo "GEN_ROOT=$HOME/gen/${PROJECT_NAME}" >> "$GITHUB_ENV"
+      - uses: dtolnay/rust-toolchain@2c7215f132e9ebf062739d9130488b56d53c060c # master (pin)
+        with:
+          toolchain: nightly
+          components: rustfmt
+      - name: cargo fmt --check
+        working-directory: ${{ env.GEN_ROOT }}
+        run: cargo fmt --all --check
+
+  clippy:
+    needs: generate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: generated-host
+          path: ${{ runner.temp }}
+      - name: Unpack generated host
+        run: |
+          mkdir -p "$HOME/gen"
+          tar -xzf "${RUNNER_TEMP}/gen-host.tgz" -C "$HOME/gen"
+          echo "GEN_ROOT=$HOME/gen/${PROJECT_NAME}" >> "$GITHUB_ENV"
+      - uses: dtolnay/rust-toolchain@2c7215f132e9ebf062739d9130488b56d53c060c # master (pin)
+        with:
+          toolchain: nightly
+          components: clippy
+      - name: cargo clippy (adapters + IsolatedLab)
+        working-directory: ${{ env.GEN_ROOT }}
+        run: >
+          cargo clippy -p photon-uf-embedded -p boson-uf-embedded
+          -p chronon-uf-embedded -p spectra-uf-embedded -p ${PROJECT_NAME}-e2e
+          --all-targets --locked -- -D warnings
+      - name: cargo clippy (server)
+        working-directory: ${{ env.GEN_ROOT }}
+        run: cargo clippy -p server --features server-embedded --all-targets --locked -- -D warnings
+
+  test:
+    needs: generate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: generated-host
+          path: ${{ runner.temp }}
+      - name: Unpack generated host
+        run: |
+          mkdir -p "$HOME/gen"
+          tar -xzf "${RUNNER_TEMP}/gen-host.tgz" -C "$HOME/gen"
+          echo "GEN_ROOT=$HOME/gen/${PROJECT_NAME}" >> "$GITHUB_ENV"
+      - uses: dtolnay/rust-toolchain@2c7215f132e9ebf062739d9130488b56d53c060c # master (pin)
+        with:
+          toolchain: nightly
+      - name: Layer 1 unit + integration
+        working-directory: ${{ env.GEN_ROOT }}
+        run: |
+          cargo test -p photon-uf-embedded --locked -- --test-threads=1
+          cargo test -p boson-uf-embedded -p chronon-uf-embedded -p spectra-uf-embedded --locked
+          cargo test -p server --features server-embedded --lib --test listen_addr_contract --locked
+          cargo test -p server --features server-embedded,e2e-host-conformance --lib e2e_support --locked
+          cargo test -p app --features ssr,server-embedded --test full_product_surface_hygiene --locked
+      - name: Layer 2 IsolatedLab
+        working-directory: ${{ env.GEN_ROOT }}
+        run: cargo test -p ${PROJECT_NAME}-e2e --locked -- --test-threads=1
+
+  e2e:
+    needs: generate
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: generated-host
+          path: ${{ runner.temp }}
+      - name: Unpack generated host
+        run: |
+          # Under GITHUB_WORKSPACE so setup-node can resolve cache-dependency-path.
+          mkdir -p "${GITHUB_WORKSPACE}/gen"
+          tar -xzf "${RUNNER_TEMP}/gen-host.tgz" -C "${GITHUB_WORKSPACE}/gen"
+          echo "GEN_ROOT=${GITHUB_WORKSPACE}/gen/${PROJECT_NAME}" >> "$GITHUB_ENV"
+      - name: Free disk space
+        working-directory: ${{ env.GEN_ROOT }}
+        run: bash scripts/ci-free-disk.sh
+      - uses: dtolnay/rust-toolchain@2c7215f132e9ebf062739d9130488b56d53c060c # master (pin)
+        with:
+          toolchain: nightly
+          targets: wasm32-unknown-unknown
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        id: cargo-leptos-cache
+        with:
+          path: |
+            ~/.cargo/bin/cargo-leptos
+            ~/.cargo/.crates.toml
+            ~/.cargo/.crates2.json
+          key: cargo-leptos-0.3.7-${{ runner.os }}
+      - name: Install cargo-leptos
+        if: steps.cargo-leptos-cache.outputs.cache-hit != 'true'
+        run: cargo install cargo-leptos --locked --version 0.3.7
+      - name: Ensure end2end lockfile
+        working-directory: ${{ env.GEN_ROOT }}/end2end
+        run: |
+          if [[ ! -f package-lock.json ]]; then
+            echo "error: end2end/package-lock.json missing from generated host" >&2
+            exit 1
+          fi
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: gen/${{ env.PROJECT_NAME }}/end2end/package-lock.json
+      - name: Install npm dependencies
+        working-directory: ${{ env.GEN_ROOT }}/end2end
+        run: npm ci
+      - name: Get Playwright version
+        id: pw-version
+        working-directory: ${{ env.GEN_ROOT }}/end2end
+        run: echo "version=$(node -p "require('./package-lock.json').packages['node_modules/@playwright/test'].version")" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.pw-version.outputs.version }}-unified-field-embedded-template
+      - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        working-directory: ${{ env.GEN_ROOT }}/end2end
+        run: npx playwright install --with-deps chromium
+      - name: Install Playwright OS deps when cache hit
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        working-directory: ${{ env.GEN_ROOT }}/end2end
+        run: npx playwright install-deps chromium
+      - name: cargo leptos end-to-end (host conformance)
+        working-directory: ${{ env.GEN_ROOT }}
+        env:
+          CI: true
+          UF_E2E_SEED_TOKEN: "ci-embedded-e2e-seed-token-not-for-production"
+          VALENCE_SQLITE_PATH: ":memory:"
+        run: >
+          cargo leptos end-to-end --project ${PROJECT_NAME} --split
+          --bin-features ssr,server-embedded,e2e-host-conformance
+          --lib-features hydrate
+      - name: Upload Playwright artifacts on failure
+        if: failure() || cancelled()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: playwright-artifacts-unified-field-embedded-${{ github.run_id }}
+          path: |
+            ${{ env.GEN_ROOT }}/end2end/playwright-report/
+            ${{ env.GEN_ROOT }}/end2end/test-results/
+          if-no-files-found: ignore
+          retention-days: 7
+
+  supply-chain:
+    needs: generate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: generated-host
+          path: ${{ runner.temp }}
+      - name: Unpack generated host
+        run: |
+          mkdir -p "$HOME/gen"
+          tar -xzf "${RUNNER_TEMP}/gen-host.tgz" -C "$HOME/gen"
+          echo "GEN_ROOT=$HOME/gen/${PROJECT_NAME}" >> "$GITHUB_ENV"
+      - uses: dtolnay/rust-toolchain@2c7215f132e9ebf062739d9130488b56d53c060c # master (pin)
+        with:
+          toolchain: stable
+      - name: Install cargo-deny
+        run: cargo install cargo-deny --locked
+      - name: cargo deny check
+        working-directory: ${{ env.GEN_ROOT }}
+        run: cargo deny check
+      - name: cargo audit (advisory)
+        working-directory: ${{ env.GEN_ROOT }}
+        run: |
+          cargo install cargo-audit --locked
+          cargo audit || true

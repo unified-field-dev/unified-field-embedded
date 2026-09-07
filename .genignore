@@ -1,0 +1,11 @@
+# Paths excluded from cargo-generate copies (like .gitignore).
+.git/
+target/
+target-docs-idio/
+data/
+end2end/node_modules/
+end2end/playwright-report/
+end2end/test-results/
+*.sqlite3
+*.sqlite3-*
+.github/workflows/template-ci.yml

@@ -1,0 +1,28 @@
+[package]
+name = "chronon-uf-embedded"
+version = "0.1.0"
+edition = "2021"
+description = "Embedded host wiring for Chronon (SQLite store + coordinator)"
+license = "MIT"
+publish = false
+
+[dependencies]
+anyhow.workspace = true
+async-trait.workspace = true
+chronon = { workspace = true, default-features = false, features = ["sqlite"] }
+chronon-coordinator = { workspace = true }
+chronon-core = { workspace = true }
+chronon-runtime = { workspace = true, default-features = false }
+chronon-spectra-telemetry = { workspace = true }
+chronon-valence-identity = { workspace = true }
+log.workspace = true
+serde_json.workspace = true
+tokio = { workspace = true, features = ["macros", "rt-multi-thread", "sync"] }
+valence = { workspace = true, default-features = false, features = ["mem"] }
+
+[dev-dependencies]
+serde_json.workspace = true
+tempfile = "3"
+
+[lints]
+workspace = true

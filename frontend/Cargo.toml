@@ -1,0 +1,28 @@
+[package]
+name = "frontend"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+app = { path = "../app" }
+leptos = { workspace = true }
+orbital = { workspace = true, default-features = false, optional = true }
+icondata.workspace = true
+icondata_core.workspace = true
+console_error_panic_hook.workspace = true
+console_log.workspace = true
+log.workspace = true
+wasm-bindgen.workspace = true
+
+# Force getrandom backends for hydrate (uuid / rand pull both 0.2 and 0.3).
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+getrandom = { version = "0.2", features = ["js"] }
+getrandom_03 = { package = "getrandom", version = "0.3", features = ["wasm_js"] }
+
+[features]
+hydrate = ["leptos/hydrate", "app/hydrate", "dep:orbital", "orbital/hydrate"]
+nightly = ["leptos/nightly"]

@@ -1,0 +1,21 @@
+[package]
+name = "photon-uf-embedded"
+version = "0.1.0"
+edition = "2021"
+description = "Embedded host wiring for Photon (SQLite storage)"
+license = "MIT"
+publish = false
+
+[dependencies]
+anyhow.workspace = true
+photon = { workspace = true, default-features = false, features = ["runtime", "sqlite"] }
+photon-runtime = { workspace = true, default-features = false }
+tokio = { workspace = true, features = ["macros", "rt-multi-thread", "sync"] }
+valence = { workspace = true, default-features = false, features = ["mem"] }
+
+[dev-dependencies]
+serde_json.workspace = true
+tempfile = "3"
+
+[lints]
+workspace = true

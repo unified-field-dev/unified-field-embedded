@@ -1,0 +1,5 @@
+# getrandom 0.3 on wasm. erase_components is disabled via
+# workspace.metadata.leptos disable-erase-components so cargo-leptos
+# does not set RUSTFLAGS (which would clobber this file).
+[target.wasm32-unknown-unknown]
+rustflags = ["--cfg", "getrandom_backend=\"wasm_js\""]

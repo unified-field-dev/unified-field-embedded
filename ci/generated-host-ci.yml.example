@@ -1,0 +1,151 @@
+# Flat CI for a *generated* host (no cargo-generate step).
+# cargo-generate post-hook copies this file to .github/workflows/ci.yml.
+# `{{project-name}}` is Liquid; GitHub Actions expressions are escaped for cargo-generate.
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_BUILD_JOBS: 1
+  CARGO_INCREMENTAL: 0
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  RUST_BACKTRACE: 1
+  PHOTON_ALLOW_DEV_TRANSPORT_KEY: "1"
+  PHOTON_TRANSPORT_KEY: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+
+jobs:
+  fmt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: dtolnay/rust-toolchain@2c7215f132e9ebf062739d9130488b56d53c060c # master (pin)
+        with:
+          toolchain: nightly
+          components: rustfmt
+      - name: cargo fmt --check
+        run: cargo fmt --all --check
+
+  clippy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: dtolnay/rust-toolchain@2c7215f132e9ebf062739d9130488b56d53c060c # master (pin)
+        with:
+          toolchain: nightly
+          components: clippy
+      - name: cargo clippy (adapters + IsolatedLab)
+        run: >
+          cargo clippy -p photon-uf-embedded -p boson-uf-embedded
+          -p chronon-uf-embedded -p spectra-uf-embedded -p {{project-name}}-e2e
+          --all-targets --locked -- -D warnings
+      - name: cargo clippy (server)
+        run: cargo clippy -p server --features server-embedded --all-targets --locked -- -D warnings
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: dtolnay/rust-toolchain@2c7215f132e9ebf062739d9130488b56d53c060c # master (pin)
+        with:
+          toolchain: nightly
+      - name: Layer 1 unit + integration
+        run: |
+          cargo test -p photon-uf-embedded --locked -- --test-threads=1
+          cargo test -p boson-uf-embedded -p chronon-uf-embedded -p spectra-uf-embedded --locked
+          cargo test -p server --features server-embedded --lib --test listen_addr_contract --locked
+          cargo test -p server --features server-embedded,e2e-host-conformance --lib e2e_support --locked
+          cargo test -p app --features ssr,server-embedded --test full_product_surface_hygiene --locked
+      - name: Layer 2 IsolatedLab
+        run: cargo test -p {{project-name}}-e2e --locked -- --test-threads=1
+
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Free disk space
+        run: bash scripts/ci-free-disk.sh
+      - uses: dtolnay/rust-toolchain@2c7215f132e9ebf062739d9130488b56d53c060c # master (pin)
+        with:
+          toolchain: nightly
+          targets: wasm32-unknown-unknown
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        id: cargo-leptos-cache
+        with:
+          path: |
+            ~/.cargo/bin/cargo-leptos
+            ~/.cargo/.crates.toml
+            ~/.cargo/.crates2.json
+          key: cargo-leptos-0.3.7-${{ "{{" }} runner.os {{ "}}" }}
+      - name: Install cargo-leptos
+        if: ${{ "{{" }} steps.cargo-leptos-cache.outputs.cache-hit != 'true' {{ "}}" }}
+        run: cargo install cargo-leptos --locked --version 0.3.7
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: end2end/package-lock.json
+      - name: Install npm dependencies
+        working-directory: end2end
+        run: npm ci
+      - name: Get Playwright version
+        id: pw-version
+        working-directory: end2end
+        run: echo "version=$(node -p "require('./package-lock.json').packages['node_modules/@playwright/test'].version")" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ "{{" }} runner.os {{ "}}" }}-${{ "{{" }} steps.pw-version.outputs.version {{ "}}" }}-{{project-name}}
+      - name: Install Playwright browsers
+        if: ${{ "{{" }} steps.playwright-cache.outputs.cache-hit != 'true' {{ "}}" }}
+        working-directory: end2end
+        run: npx playwright install --with-deps chromium
+      - name: Install Playwright OS deps when cache hit
+        if: ${{ "{{" }} steps.playwright-cache.outputs.cache-hit == 'true' {{ "}}" }}
+        working-directory: end2end
+        run: npx playwright install-deps chromium
+      - name: cargo leptos end-to-end (host conformance)
+        env:
+          CI: true
+          UF_E2E_SEED_TOKEN: "ci-embedded-e2e-seed-token-not-for-production"
+          VALENCE_SQLITE_PATH: ":memory:"
+        run: >
+          cargo leptos end-to-end --project {{project-name}} --split
+          --bin-features ssr,server-embedded,e2e-host-conformance
+          --lib-features hydrate
+      - name: Upload Playwright artifacts on failure
+        if: ${{ "{{" }} failure() || cancelled() {{ "}}" }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: playwright-artifacts-{{project-name}}-${{ "{{" }} github.run_id {{ "}}" }}
+          path: |
+            end2end/playwright-report/
+            end2end/test-results/
+          if-no-files-found: ignore
+          retention-days: 7
+
+  supply-chain:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: dtolnay/rust-toolchain@2c7215f132e9ebf062739d9130488b56d53c060c # master (pin)
+        with:
+          toolchain: stable
+      - name: Install cargo-deny
+        run: cargo install cargo-deny --locked
+      - name: cargo deny check
+        run: cargo deny check
+      - name: cargo audit (advisory)
+        run: |
+          cargo install cargo-audit --locked
+          cargo audit || true
+        # Soft-fail until the advisory backlog is triaged; deny.toml is the hard gate.

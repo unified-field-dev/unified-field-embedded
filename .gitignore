@@ -1,0 +1,12 @@
+/target
+/target-*
+**/site
+**/*.rs.bk
+.DS_Store
+/data/*.sqlite3
+/data/*.sqlite3-*
+/data/sessions/
+uploads/
+end2end/node_modules/
+**/node_modules/
+target/

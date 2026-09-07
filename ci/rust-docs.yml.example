@@ -1,0 +1,12 @@
+# Inactive example — do not enable as a live GitHub Actions workflow yet.
+# name: rust-docs
+# on: { push: { branches: [main] }, pull_request: {} }
+# jobs:
+#   docs:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v4
+#       - run: |
+#           export CARGO_BUILD_JOBS=1
+#           cargo clippy -p lepton-appearance --features ssr -- -D warnings
+#           RUSTDOCFLAGS='-D warnings' cargo doc -p lepton-appearance --no-deps --features ssr

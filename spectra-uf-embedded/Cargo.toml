@@ -1,0 +1,23 @@
+[package]
+name = "spectra-uf-embedded"
+version = "0.1.0"
+edition = "2021"
+description = "Embedded host wiring for Spectra (durable SQLite via sqlx)"
+license = "MIT"
+publish = false
+
+[dependencies]
+anyhow.workspace = true
+async-trait.workspace = true
+chrono = { workspace = true, default-features = false, features = ["clock", "std", "serde"] }
+serde_json.workspace = true
+spectra = { workspace = true, default-features = false }
+spectra-core = { workspace = true }
+sqlx = { version = "0.8", default-features = false, features = ["runtime-tokio", "sqlite"] }
+tokio = { workspace = true, features = ["macros", "rt-multi-thread", "sync"] }
+
+[dev-dependencies]
+tempfile = "3"
+
+[lints]
+workspace = true

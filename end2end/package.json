@@ -1,0 +1,16 @@
+{
+  "name": "{{project-name}}-e2e",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "wait-server": "wait-on -t 120000 -i 500 -l http-get://127.0.0.1:3000/health",
+    "test": "npm run wait-server && npx playwright test --workers=1",
+    "test:demo": "npm test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.44.1",
+    "@types/node": "^20.12.12",
+    "typescript": "^5.4.5",
+    "wait-on": "^7.2.0"
+  }
+}

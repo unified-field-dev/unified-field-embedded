@@ -1,0 +1,26 @@
+[package]
+name = "boson-uf-embedded"
+version = "0.1.0"
+edition = "2021"
+description = "Embedded host wiring for Boson (SQLite queue + coordinator)"
+license = "MIT"
+publish = false
+
+[dependencies]
+anyhow.workspace = true
+boson = { workspace = true, default-features = false, features = ["sqlite"] }
+boson-coordinator = { workspace = true }
+boson-core = { workspace = true }
+boson-runtime = { workspace = true, default-features = false }
+boson-spectra-telemetry = { workspace = true }
+boson-valence-identity = { workspace = true }
+log.workspace = true
+tokio = { workspace = true, features = ["macros", "rt-multi-thread", "sync"] }
+valence = { workspace = true, default-features = false, features = ["mem"] }
+
+[dev-dependencies]
+serde_json.workspace = true
+tempfile = "3"
+
+[lints]
+workspace = true

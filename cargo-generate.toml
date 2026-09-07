@@ -1,0 +1,43 @@
+# cargo-generate config for the Unified Field embedded host template.
+# Primary create path: cargo generate --git https://github.com/unified-field-dev/unified-field-embedded
+#
+# Upstream CI uses .github/workflows/template-ci.yml (generate-then-gate).
+# That workflow is ignored here so customer hosts get a flat ci.yml instead.
+
+[template]
+cargo_generate_version = ">=0.19.0"
+ignore = [
+    ".git",
+    ".github/workflows/template-ci.yml",
+    "target",
+    "target-docs-idio",
+    "data",
+    "end2end/node_modules",
+    "end2end/playwright-report",
+    "end2end/test-results",
+    "**/*.sqlite3",
+    "**/*.sqlite3-*",
+]
+exclude = [
+    "scripts/verify-template-generate.sh",
+    "public/**",
+    ".genignore",
+]
+
+[placeholders.app_title]
+type = "string"
+prompt = "App display title (HTML document title, WebAuthn rp_name, README)"
+default = "My App"
+
+[placeholders.gh_owner]
+type = "string"
+prompt = "GitHub owner or org"
+default = "unified-field-dev"
+
+[placeholders.gh_repo]
+type = "string"
+prompt = "GitHub repository name"
+default = "{{project-name}}"
+
+[hooks]
+post = ["scripts/cargo-generate-post.rhai"]

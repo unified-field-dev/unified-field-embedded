@@ -1,0 +1,128 @@
+[package]
+name = "app"
+version = "0.1.0"
+edition = "2021"
+description = "Embedded {{app_title}} Leptos route shell (full product UI always on; marketing lives on unified-field-site)"
+license = "MIT"
+
+[dependencies]
+leptos.workspace = true
+leptos_meta.workspace = true
+leptos_router.workspace = true
+leptos_axum = { workspace = true, optional = true }
+cfg-if.workspace = true
+http.workspace = true
+icondata.workspace = true
+icondata_core.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+
+orbital = { workspace = true, default-features = false }
+orbital-macros = { workspace = true }
+uf-product = { workspace = true, default-features = false }
+uf-integrations = { workspace = true, default-features = false }
+
+counter-app = { workspace = true, default-features = false }
+lepton-auth = { workspace = true, default-features = false }
+lepton-auth-app = { workspace = true, default-features = false }
+lepton-shell = { workspace = true, default-features = false }
+
+uf-apps = { workspace = true, default-features = false }
+tag-app = { workspace = true, default-features = false }
+uf-component-preview = { workspace = true, default-features = false }
+uf-welcome = { workspace = true, default-features = false }
+
+# Full product surface — always compiled (no `full` feature gate).
+uf-notifications = { workspace = true, default-features = false }
+lepton-app = { workspace = true, default-features = false }
+valence-app = { workspace = true, default-features = false }
+chronon-app = { workspace = true, default-features = false }
+photon-app = { workspace = true, default-features = false }
+boson-app = { workspace = true, default-features = false }
+spectra-app = { workspace = true, default-features = false }
+gauge-app = { workspace = true, default-features = false }
+neutrino-app = { workspace = true, default-features = false }
+record-history-leptos = { workspace = true, default-features = false }
+
+[build-dependencies]
+uf-codegen = { workspace = true }
+
+[features]
+default = []
+# Full product: platform admin apps + counter/auth/tag/welcome/orbital.
+# Marketing and Coming Soon live on unified-field-site.
+hydrate = [
+    "leptos/hydrate",
+    "orbital/hydrate",
+    "orbital/preview",
+    "uf-product/hydrate",
+    "uf-integrations/hydrate",
+    "counter-app/hydrate",
+    "lepton-auth/hydrate",
+    "lepton-auth/totp",
+    "lepton-auth-app/hydrate",
+    "lepton-auth-app/oauth-google",
+    "lepton-auth-app/oauth-github",
+    "lepton-shell/hydrate",
+    "uf-apps/hydrate",
+    "uf-apps/lazy-routes",
+    "tag-app/hydrate",
+    "uf-component-preview/hydrate",
+    "uf-welcome/hydrate",
+    "uf-welcome/lazy-routes",
+    "uf-notifications/hydrate",
+    "uf-notifications/lazy-routes",
+    "lepton-app/hydrate",
+    "lepton-app/webauthn",
+    "lepton-app/oauth-google",
+    "lepton-app/oauth-github",
+    "valence-app/hydrate",
+    "chronon-app/hydrate",
+    "photon-app/hydrate",
+    "boson-app/hydrate",
+    "spectra-app/hydrate",
+    "gauge-app/hydrate",
+    "neutrino-app/hydrate",
+    "record-history-leptos/hydrate",
+]
+ssr = [
+    "leptos/ssr",
+    "leptos_meta/ssr",
+    "leptos_router/ssr",
+    "dep:leptos_axum",
+    "orbital/ssr",
+    "orbital/preview",
+    "uf-product/ssr",
+    "uf-integrations/ssr",
+    "counter-app/ssr",
+    "lepton-auth/ssr",
+    "lepton-auth/totp",
+    "lepton-auth-app/ssr",
+    "lepton-auth-app/oauth-google",
+    "lepton-auth-app/oauth-github",
+    "lepton-shell/ssr",
+    "uf-apps/ssr",
+    "uf-apps/lazy-routes",
+    "tag-app/ssr",
+    "uf-component-preview/ssr",
+    "uf-welcome/ssr",
+    "uf-welcome/lazy-routes",
+    "uf-welcome/admin-permissions",
+    "uf-notifications/ssr",
+    "uf-notifications/lazy-routes",
+    "lepton-app/ssr",
+    "lepton-app/webauthn",
+    "lepton-app/oauth-google",
+    "lepton-app/oauth-github",
+    "valence-app/ssr",
+    "chronon-app/ssr",
+    "photon-app/ssr",
+    "boson-app/ssr",
+    "spectra-app/ssr",
+    "gauge-app/ssr",
+    "neutrino-app/ssr",
+    "record-history-leptos/ssr",
+]
+# Embedded host profile marker (always paired with ssr from the server crate).
+server-embedded = []

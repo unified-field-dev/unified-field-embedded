@@ -1,0 +1,37 @@
+[package]
+name = "{{project-name}}-e2e"
+version = "0.1.0"
+edition = "2021"
+description = "IsolatedLab in-process e2e for embedded host platform composition"
+license = "MIT"
+publish = false
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+anyhow.workspace = true
+boson-uf-embedded = { workspace = true }
+chronon-uf-embedded = { workspace = true }
+higgs = { workspace = true, default-features = false, features = ["full"] }
+photon-uf-embedded = { workspace = true }
+serde_json.workspace = true
+spectra = { workspace = true, default-features = false }
+spectra-uf-embedded = { workspace = true }
+tempfile = "3"
+tokio = { workspace = true, features = ["rt-multi-thread", "macros", "sync"] }
+valence = { workspace = true, default-features = false, features = ["sqlite"] }
+
+[dev-dependencies]
+# Scenario binaries inherit crate deps.
+
+[lints.rust]
+missing_docs = "deny"
+
+[lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+unwrap_used = "allow"
+expect_used = "allow"
+dbg_macro = "deny"
+print_stdout = "deny"
+print_stderr = "deny"

@@ -1,0 +1,122 @@
+[package]
+name = "server"
+version = "0.1.0"
+edition = "2021"
+description = "Embedded {{app_title}} SSR full-product host"
+license = "MIT"
+
+[[bin]]
+name = "server"
+path = "src/main.rs"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+anyhow.workspace = true
+app = { path = "../app", default-features = false, features = ["ssr"] }
+async-trait.workspace = true
+axum.workspace = true
+axum-login = { workspace = true, optional = true }
+boson-uf-embedded = { workspace = true, optional = true }
+chronon-uf-embedded = { workspace = true, optional = true }
+counter-app-worker = { workspace = true, optional = true }
+gauge = { workspace = true, optional = true }
+gauge-app = { workspace = true, default-features = false, optional = true }
+higgs = { workspace = true, default-features = false, optional = true }
+lepton-host-adapter = { workspace = true, default-features = false, optional = true }
+lepton-identity = { workspace = true, optional = true }
+lepton-auth = { workspace = true, default-features = false, optional = true }
+lepton-smtp = { workspace = true, optional = true }
+lepton-sms = { workspace = true, optional = true }
+lepton-test-support = { workspace = true, optional = true }
+leptos = { workspace = true, features = ["ssr"] }
+leptos_axum = { workspace = true, default-features = true }
+log.workspace = true
+neutrino = { workspace = true, optional = true }
+photon = { workspace = true, default-features = false, optional = true }
+photon-uf-embedded = { workspace = true, optional = true }
+photon-axum = { workspace = true, default-features = false, optional = true }
+record-history = { workspace = true, optional = true }
+serde.workspace = true
+serde_json.workspace = true
+simple_logger.workspace = true
+soliton = { workspace = true, optional = true }
+spectra = { workspace = true, default-features = false, optional = true }
+spectra-uf-embedded = { workspace = true, optional = true }
+valence-spectra-telemetry = { workspace = true, optional = true }
+tag = { workspace = true, optional = true }
+uf-welcome = { workspace = true, optional = true, default-features = false }
+tokio.workspace = true
+tower.workspace = true
+tower-http.workspace = true
+tower-sessions = { workspace = true, optional = true }
+time.workspace = true
+uf-oauth-boot = { workspace = true, optional = true }
+valence = { workspace = true, default-features = false, optional = true }
+valence-platform = { workspace = true, optional = true }
+
+[features]
+default = ["server-embedded"]
+ssr = []
+# Full-product host: SQLite + auth + counter + Chronon/Boson/Photon/Spectra
+# runtimes and always-on platform admin UI (app crate). Marketing / Coming Soon
+# live on unified-field-site.
+server-embedded = [
+    "app/server-embedded",
+    "dep:chronon-uf-embedded",
+    "dep:boson-uf-embedded",
+    "dep:photon-uf-embedded",
+    "dep:spectra-uf-embedded",
+    "dep:spectra",
+    "dep:valence-spectra-telemetry",
+    "dep:valence",
+    "valence/sqlite",
+    "dep:valence-platform",
+    "dep:higgs",
+    "higgs/ssr",
+    "higgs/full",
+    "dep:lepton-host-adapter",
+    "lepton-host-adapter/ssr",
+    "lepton-host-adapter/db-sqlite",
+    "dep:lepton-identity",
+    "lepton-identity/db-sqlite",
+    "dep:lepton-auth",
+    "lepton-auth/ssr",
+    "lepton-auth/totp",
+    "lepton-auth/email",
+    "lepton-auth/phone",
+    "dep:lepton-smtp",
+    "dep:lepton-sms",
+    "lepton-auth/oauth-google",
+    "lepton-auth/oauth-github",
+    "lepton-auth/webauthn",
+    "dep:photon",
+    "photon/runtime",
+    "photon/sqlite",
+    "dep:photon-axum",
+    "photon-axum/runtime",
+    "dep:soliton",
+    "dep:counter-app-worker",
+    "counter-app-worker/db-sqlite",
+    "dep:gauge",
+    "gauge/ssr",
+    "gauge/db-sqlite",
+    "dep:gauge-app",
+    "gauge-app/ssr",
+    "dep:neutrino",
+    "neutrino/ssr",
+    "dep:uf-oauth-boot",
+    "dep:tag",
+    "tag/ssr",
+    "tag/db-sqlite",
+    "dep:uf-welcome",
+    "uf-welcome/ssr",
+    "uf-welcome/admin-permissions",
+    "dep:record-history",
+    "record-history/ssr",
+    "dep:tower-sessions",
+    "dep:axum-login",
+]
+# Playwright host-conformance fixture route. Never enable in production/release hosts.
+e2e-host-conformance = ["dep:lepton-test-support", "lepton-test-support/axum"]
