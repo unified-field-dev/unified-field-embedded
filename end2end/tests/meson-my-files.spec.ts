@@ -1,3 +1,9 @@
+//! Validating My Files scenarios:
+//! - meson-my-files-list-happy (empty list for fresh seed user)
+//! - meson-my-files-anonymous-gate-sad (anonymous auth gate; no list surface)
+//!
+//! Peer IDOR is covered by L1 meson integration (`meson-my-files-idor-sad`), not this UI gate.
+
 import { test, expect } from "@playwright/test";
 import {
   assertAnonymousShell,
@@ -9,11 +15,6 @@ import { gotoHydrated } from "./support/hydration";
 
 const hasSeedToken = Boolean(process.env.UF_E2E_SEED_TOKEN?.trim());
 
-/**
- * Validating My Files scenarios (plan IDs):
- * - meson-my-files-list-happy (empty list for fresh seed user)
- * - meson-my-files-idor-sad (anonymous gate; no list surface)
- */
 test.describe("Meson My Files", () => {
   test.beforeEach(() => {
     test.skip(!hasSeedToken, "UF_E2E_SEED_TOKEN required for Meson My Files probes");
@@ -41,7 +42,7 @@ test.describe("Meson My Files", () => {
     });
   });
 
-  test("meson-my-files-idor-sad", async ({ page }) => {
+  test("meson-my-files-anonymous-gate-sad", async ({ page }) => {
     await gotoHydrated(page, "/meson");
     await assertAnonymousShell(page);
     await expect(page.getByTestId("auth-required-empty-state")).toBeAttached({

@@ -207,7 +207,9 @@ use axum::middleware::from_fn;
 use axum::{BoxError, Extension, Router};
 use axum_login::AuthManagerLayerBuilder;
 use higgs::HiggsConfig;
-use lepton_host_adapter::files::{files_routes, FileByteBackend, FilesConfig, LocalDiskBlobStore};
+use lepton_host_adapter::files::{
+    blob_store_from_env, files_routes, FileByteBackend, FilesConfig,
+};
 use lepton_host_adapter::{session_snapshot_middleware, Backend, PhotonAuth};
 use leptos::config::get_configuration;
 use leptos::prelude::*;
@@ -683,7 +685,11 @@ async fn build_router_from_platform(
     // Photon WebSocket mount (needs PHOTON_TRANSPORT_KEY + Origin allowlist).
     app = ws_router::<AppState, PhotonAuth>(app);
 
-    let file_store: Arc<dyn FileByteBackend> = Arc::new(LocalDiskBlobStore::default_uploads());
+    let file_store: Arc<dyn FileByteBackend> =
+        blob_store_from_env().unwrap_or_else(|e| {
+            log::warn!("[server] MESON blob store from env failed; using LocalDisk uploads/: {e}");
+            Arc::new(lepton_host_adapter::files::LocalDiskBlobStore::default_uploads())
+        });
     let file_store_for_ctx = Arc::clone(&file_store);
     let files_config = FilesConfig::new(default_backend_key.clone());
 
