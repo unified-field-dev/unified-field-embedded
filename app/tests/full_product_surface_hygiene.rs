@@ -11,6 +11,7 @@ fn embedded_app_requires_platform_apps_happy_path() {
         "spectra-app",
         "gauge-app",
         "neutrino-app",
+        "meson-app",
         "lepton-app",
         "uf-notifications",
         "record-history-leptos",

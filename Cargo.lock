@@ -121,6 +121,7 @@ dependencies = [
  "leptos_axum",
  "leptos_meta",
  "leptos_router",
+ "meson-app",
  "neutrino-app",
  "orbital-macros",
  "orbital-ui",
@@ -2928,7 +2929,6 @@ dependencies = [
 [[package]]
 name = "lepton"
 version = "0.1.0"
-source = "git+https://github.com/unified-field-dev/lepton?branch=main#28f4ec277ba01dc062df18f189afdb79a33143bf"
 dependencies = [
  "lepton-host-adapter",
 ]
@@ -2971,14 +2971,15 @@ dependencies = [
 [[package]]
 name = "lepton-auth"
 version = "0.1.0"
-source = "git+https://github.com/unified-field-dev/lepton?branch=main#28f4ec277ba01dc062df18f189afdb79a33143bf"
 dependencies = [
  "anyhow",
  "argon2",
  "async-trait",
  "axum",
  "axum-login",
+ "base64 0.22.1",
  "cfg-if",
+ "chacha20poly1305",
  "chrono",
  "futures",
  "higgs",
@@ -3059,7 +3060,6 @@ dependencies = [
 [[package]]
 name = "lepton-auth-ui"
 version = "0.1.0"
-source = "git+https://github.com/unified-field-dev/lepton?branch=main#28f4ec277ba01dc062df18f189afdb79a33143bf"
 dependencies = [
  "cfg-if",
  "lepton-auth",
@@ -3068,7 +3068,6 @@ dependencies = [
  "orbital-base-components",
  "orbital-core-components",
  "orbital-motion",
- "orbital-primitives",
  "parcel_selectors",
  "tracing",
  "turf",
@@ -3078,7 +3077,6 @@ dependencies = [
 [[package]]
 name = "lepton-host-adapter"
 version = "0.1.0"
-source = "git+https://github.com/unified-field-dev/lepton?branch=main#28f4ec277ba01dc062df18f189afdb79a33143bf"
 dependencies = [
  "anyhow",
  "argon2",
@@ -3093,6 +3091,7 @@ dependencies = [
  "lepton-identity",
  "leptos",
  "leptos_axum",
+ "meson",
  "password-hash",
  "photon-axum",
  "rand_core 0.6.4",
@@ -3110,7 +3109,6 @@ dependencies = [
 [[package]]
 name = "lepton-identity"
 version = "0.1.0"
-source = "git+https://github.com/unified-field-dev/lepton?branch=main#28f4ec277ba01dc062df18f189afdb79a33143bf"
 dependencies = [
  "anyhow",
  "argon2",
@@ -3144,7 +3142,6 @@ dependencies = [
 [[package]]
 name = "lepton-sms"
 version = "0.1.0"
-source = "git+https://github.com/unified-field-dev/lepton?branch=main#28f4ec277ba01dc062df18f189afdb79a33143bf"
 dependencies = [
  "async-trait",
  "reqwest",
@@ -3158,7 +3155,6 @@ dependencies = [
 [[package]]
 name = "lepton-smtp"
 version = "0.1.0"
-source = "git+https://github.com/unified-field-dev/lepton?branch=main#28f4ec277ba01dc062df18f189afdb79a33143bf"
 dependencies = [
  "async-trait",
  "hickory-resolver",
@@ -3172,7 +3168,6 @@ dependencies = [
 [[package]]
 name = "lepton-test-support"
 version = "0.1.0"
-source = "git+https://github.com/unified-field-dev/lepton?branch=main#28f4ec277ba01dc062df18f189afdb79a33143bf"
 dependencies = [
  "axum",
  "chrono",
@@ -3659,6 +3654,61 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cf8baf1c55e62ffcace7a9f06f4bd9cd3f0c4beb022d3b367256b91b87513d98"
 
 [[package]]
+name = "meson"
+version = "0.1.0"
+source = "git+https://github.com/deathbreakfast/meson?branch=main#c3f280d2f3cfaea352af4b36527aac26ae613c4b"
+dependencies = [
+ "async-trait",
+ "chrono",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.20",
+ "tokio",
+ "tracing",
+ "uf-valence",
+ "uf-valence-codegen",
+]
+
+[[package]]
+name = "meson-app"
+version = "0.1.0"
+source = "git+https://github.com/deathbreakfast/meson-uf-app?branch=main#fe4593fd5e900298cfb21269f507d79a062a2d36"
+dependencies = [
+ "async-trait",
+ "base64 0.22.1",
+ "cfg-if",
+ "chrono",
+ "higgs",
+ "http",
+ "icondata",
+ "icondata_core",
+ "lepton-auth",
+ "lepton-auth-ui",
+ "lepton-shell",
+ "leptos",
+ "leptos_axum",
+ "leptos_meta",
+ "leptos_router",
+ "log",
+ "meson",
+ "orbital-macros",
+ "orbital-theme",
+ "serde",
+ "serde_json",
+ "tracing",
+ "turf",
+ "uf-help",
+ "uf-help-macros",
+ "uf-integrations",
+ "uf-product",
+ "uf-product-macros",
+ "uf-search-core",
+ "uf-valence",
+ "wasm-bindgen",
+ "web-sys",
+]
+
+[[package]]
 name = "mime"
 version = "0.3.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3716,23 +3766,6 @@ dependencies = [
  "mime",
  "spin",
  "version_check",
-]
-
-[[package]]
-name = "{{project-name}}-e2e"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "boson-uf-embedded",
- "chronon-uf-embedded",
- "higgs",
- "photon-uf-embedded",
- "serde_json",
- "spectra-uf-embedded",
- "tempfile",
- "tokio",
- "uf-spectra 0.1.3 (git+https://github.com/unified-field-dev/Spectra?branch=main)",
- "uf-valence",
 ]
 
 [[package]]
@@ -8537,3 +8570,7 @@ source = "git+https://github.com/unified-field-dev/valence?branch=main#a04a60a45
 name = "uf-valence-backend-postgres"
 version = "0.1.5"
 source = "git+https://github.com/unified-field-dev/valence?branch=main#a04a60a452360275f340d1207a1d267134170db3"
+
+[[patch.unused]]
+name = "lepton-spectra-telemetry"
+version = "0.1.0"

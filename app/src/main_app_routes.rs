@@ -15,6 +15,7 @@ use gauge_app::PermissionRoutes;
 use lepton_app::UserAppRoutes;
 use lepton_auth_app::LeptonAuthRoutes;
 use neutrino_app::NeutrinoRoutes;
+use meson_app::MesonRoutes;
 use photon_app::PhotonRoutes;
 use spectra_app::SpectraRoutes;
 use tag_app::TagRoutes;
@@ -73,6 +74,7 @@ pub fn MainAppRouteChildren() -> impl leptos_router::MatchNestedRoutes + Clone {
             <BosonRoutes />
             <PermissionRoutes />
             <NeutrinoRoutes />
+            <MesonRoutes />
 
             // Keep catch-all last so unknown paths stay a clean product 404
             <Route path=path!("/*any") view=HostNotFoundPage />

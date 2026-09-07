@@ -682,6 +682,11 @@ async fn build_router_from_platform(
         );
     // Photon WebSocket mount (needs PHOTON_TRANSPORT_KEY + Origin allowlist).
     app = ws_router::<AppState, PhotonAuth>(app);
+
+    let file_store: Arc<dyn FileByteBackend> = Arc::new(LocalDiskBlobStore::default_uploads());
+    let file_store_for_ctx = Arc::clone(&file_store);
+    let files_config = FilesConfig::new(default_backend_key.clone());
+
     app = app
         .leptos_routes_with_context(
             &state,
@@ -697,6 +702,7 @@ async fn build_router_from_platform(
                 provide_context(boson_backend.clone());
                 provide_context(photon.clone());
                 provide_context(spectra.clone());
+                provide_context(file_store_for_ctx.clone());
                 lepton_auth::services::provide_auth_services(auth_services_for_ctx.clone());
             },
             move || {
@@ -708,9 +714,6 @@ async fn build_router_from_platform(
             AppState,
             _,
         >(move || {}, app::shell));
-
-    let file_store: Arc<dyn FileByteBackend> = Arc::new(LocalDiskBlobStore::default_uploads());
-    let files_config = FilesConfig::new(default_backend_key.clone());
 
     let secure_cookies = session_cookie_secure(&public_base);
     let mut protected = app

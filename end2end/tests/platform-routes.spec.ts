@@ -9,6 +9,7 @@ const PLATFORM_ROOTS = [
   ["boson", "boson-app-root", false],
   ["permission", "permission-app-root", false],
   ["secrets", "neutrino-app-root", true],
+  ["meson", "meson-app-root", false],
   ["tag", "tag-app-root", true],
 ] as const;
 

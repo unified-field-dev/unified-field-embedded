@@ -43,6 +43,7 @@ boson-app = { workspace = true, default-features = false }
 spectra-app = { workspace = true, default-features = false }
 gauge-app = { workspace = true, default-features = false }
 neutrino-app = { workspace = true, default-features = false }
+meson-app = { workspace = true, default-features = false }
 record-history-leptos = { workspace = true, default-features = false }
 
 [build-dependencies]
@@ -84,6 +85,7 @@ hydrate = [
     "spectra-app/hydrate",
     "gauge-app/hydrate",
     "neutrino-app/hydrate",
+    "meson-app/hydrate",
     "record-history-leptos/hydrate",
 ]
 ssr = [
@@ -122,6 +124,7 @@ ssr = [
     "spectra-app/ssr",
     "gauge-app/ssr",
     "neutrino-app/ssr",
+    "meson-app/ssr",
     "record-history-leptos/ssr",
 ]
 # Embedded host profile marker (always paired with ssr from the server crate).

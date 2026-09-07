@@ -22,6 +22,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         "spectra-app".to_string(),
         "gauge-app".to_string(),
         "neutrino-app".to_string(),
+        "meson-app".to_string(),
         "record-history-leptos".to_string(),
     ];
     // Marketing stays on unified-field-site. Gluon/Nucleus/setup-wizard stay out.

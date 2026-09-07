@@ -186,6 +186,7 @@ gauge = { git = "https://github.com/unified-field-dev/gauge", branch = "main", d
 gauge-app = { git = "https://github.com/unified-field-dev/gauge-uf-app", branch = "main", default-features = false }
 neutrino = { git = "https://github.com/unified-field-dev/neutrino", branch = "main", default-features = false }
 neutrino-app = { git = "https://github.com/unified-field-dev/neutrino-uf-app", branch = "main", default-features = false }
+meson-app = { git = "https://github.com/deathbreakfast/meson-uf-app", branch = "main", default-features = false }
 uf-oauth-boot = { git = "https://github.com/unified-field-dev/uf-oauth-boot", branch = "main" }
 record-history = { git = "https://github.com/unified-field-dev/record-history", branch = "main", default-features = false }
 record-history-leptos = { git = "https://github.com/unified-field-dev/record-history", branch = "main", default-features = false }
@@ -290,5 +291,18 @@ orbital-tree = { git = "https://github.com/unified-field-dev/orbital", branch = 
 orbital-scheduler = { git = "https://github.com/unified-field-dev/orbital", branch = "main" }
 orbital-motion = { git = "https://github.com/unified-field-dev/orbital", branch = "main" }
 orbital-style = { git = "https://github.com/unified-field-dev/orbital", branch = "main" }
+
+# Local lepton (Meson FileByteBackend) until uf-dev lepton publishes the lift.
+[patch."https://github.com/unified-field-dev/lepton"]
+lepton-auth = { path = "../../L1-host-stack-kits/lepton/lepton-auth", default-features = false }
+lepton-auth-ui = { path = "../../L1-host-stack-kits/lepton/lepton-auth-ui", default-features = false }
+lepton-host-adapter = { path = "../../L1-host-stack-kits/lepton/lepton-host-adapter", default-features = false }
+lepton-identity = { path = "../../L1-host-stack-kits/lepton/lepton-identity", default-features = false }
+lepton = { path = "../../L1-host-stack-kits/lepton/lepton", default-features = false }
+lepton-smtp = { path = "../../L1-host-stack-kits/lepton/lepton-smtp" }
+lepton-sms = { path = "../../L1-host-stack-kits/lepton/lepton-sms" }
+lepton-test-support = { path = "../../L1-host-stack-kits/lepton/lepton-test-support", default-features = false }
+lepton-spectra-telemetry = { path = "../../L1-host-stack-kits/lepton/lepton-spectra-telemetry" }
+
 [workspace.lints.rust]
 missing_docs = "deny"

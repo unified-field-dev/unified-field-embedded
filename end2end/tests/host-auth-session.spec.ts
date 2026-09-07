@@ -19,6 +19,7 @@ const authenticatedRoutes = [
   ["/boson", "boson-app-root"],
   ["/permission", "permission-app-root"],
   ["/secrets", "neutrino-app-root"],
+  ["/meson", "meson-app-root"],
   ["/tag", "tag-app-root"],
 ] as const;
 
