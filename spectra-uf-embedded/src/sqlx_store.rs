@@ -9,9 +9,9 @@ use async_trait::async_trait;
 use chrono::{DateTime, Utc};
 use serde_json::Value;
 use spectra_core::{
-    Error, EventAggregateResult, EventRow, EventStorageBackend, EventsAggregateFilter,
-    EventsQueryFilter, LabelMatcher, MetricPoint, MetricsQueryRange, MetricsStorageBackend, Result,
-    StorageEngineType,
+    aggregate_rows_to_result, Error, EventAggregateResult, EventExploreView, EventMeasure,
+    EventRow, EventStorageBackend, EventsAggregateFilter, EventsQueryFilter, LabelMatcher,
+    MetricPoint, MetricsQueryRange, MetricsStorageBackend, Result, StorageEngineType,
 };
 use sqlx::sqlite::{SqliteConnectOptions, SqlitePoolOptions};
 use sqlx::{Row, SqlitePool};
@@ -346,13 +346,271 @@ impl EventStorageBackend for SqlxEventsBackend {
         Ok(spectra_core::finalize_event_rows(out, &filter))
     }
 
-    async fn query_aggregate(
-        &self,
-        _filter: EventsAggregateFilter,
-    ) -> Result<EventAggregateResult> {
-        Ok(EventAggregateResult::TimeSeries {
-            series: Vec::new(),
-            headline: Vec::new(),
+    async fn query_aggregate(&self, filter: EventsAggregateFilter) -> Result<EventAggregateResult> {
+        // Spectra git lock used by this host omits `view` on EventsAggregateFilter.
+        // TimeSeries vs Slices is inferred from `group_by_field`: explore UI clears
+        // group_by for Time series / Event log so leftover Bar/Pie group-by cannot
+        // return Slices into the series panel. Prefer honoring `view` once the dep
+        // ships it (L0 spectra-core already has the field).
+        let rows = self
+            .query_rows(EventsQueryFilter {
+                table: filter.table.clone(),
+                start: Some(filter.start),
+                end: Some(filter.end),
+                partition: filter.partition.clone(),
+                limit: None,
+                offset: None,
+                sort_field: None,
+                sort_desc: false,
+                filter: filter.filter.clone(),
+            })
+            .await?;
+        Ok(aggregate_loaded_event_rows(&filter, &rows))
+    }
+}
+
+/// Bucket / group loaded event rows into a chart result (host Spectra lock).
+fn aggregate_loaded_event_rows(
+    filter: &EventsAggregateFilter,
+    rows: &[EventRow],
+) -> EventAggregateResult {
+    let group_by = filter
+        .group_by_field
+        .as_ref()
+        .map(|s| s.trim())
+        .filter(|s| !s.is_empty());
+
+    if let Some(group_field) = group_by {
+        let mut groups: std::collections::BTreeMap<String, f64> = std::collections::BTreeMap::new();
+        let mut saw_field = false;
+        for row in rows {
+            let Some(raw) = row.fields.get(group_field) else {
+                continue;
+            };
+            saw_field = true;
+            let label = match raw {
+                serde_json::Value::String(s) => s.clone(),
+                other => other.to_string(),
+            };
+            *groups.entry(label).or_insert(0.0) +=
+                row_measure_value(row, filter.measure, filter.measure_field.as_deref());
+        }
+        if !saw_field {
+            return EventAggregateResult::Slices {
+                slices: Vec::new(),
+                headline: Vec::new(),
+            };
+        }
+        let mapped: Vec<serde_json::Value> = groups
+            .into_iter()
+            .map(|(label, value)| serde_json::json!({ "label": label, "value": value }))
+            .collect();
+        return aggregate_rows_to_result(EventExploreView::PieChart, mapped, filter.measure);
+    }
+
+    let bucket_secs = filter.time_bucket_secs.unwrap_or(3600).max(1);
+    let mut buckets: std::collections::BTreeMap<i64, f64> = std::collections::BTreeMap::new();
+    for row in rows {
+        let aligned = align_bucket_ts(row.ts, bucket_secs);
+        *buckets.entry(aligned).or_insert(0.0) +=
+            row_measure_value(row, filter.measure, filter.measure_field.as_deref());
+    }
+    let mapped: Vec<serde_json::Value> = buckets
+        .into_iter()
+        .map(|(epoch, value)| {
+            let ts = DateTime::<Utc>::from_timestamp(epoch, 0).unwrap_or(filter.end);
+            serde_json::json!({
+                "bucket": ts.to_rfc3339(),
+                "value": value,
+            })
         })
+        .collect();
+    aggregate_rows_to_result(EventExploreView::TimeSeries, mapped, filter.measure)
+}
+
+fn align_bucket_ts(ts: DateTime<Utc>, bucket_secs: u64) -> i64 {
+    let secs = i64::try_from(bucket_secs).unwrap_or(i64::MAX).max(1);
+    let epoch = ts.timestamp();
+    epoch - epoch.rem_euclid(secs)
+}
+
+fn row_measure_value(row: &EventRow, measure: EventMeasure, measure_field: Option<&str>) -> f64 {
+    match measure {
+        EventMeasure::Count => 1.0,
+        EventMeasure::Sum => measure_field
+            .and_then(|field| row.fields.get(field))
+            .and_then(|v| {
+                v.as_f64().or_else(|| {
+                    v.as_i64().map(|i| {
+                        #[allow(clippy::cast_precision_loss)]
+                        {
+                            i as f64
+                        }
+                    })
+                })
+            })
+            .unwrap_or(0.0),
+    }
+}
+
+#[cfg(test)]
+mod query_aggregate_tests {
+    use super::*;
+    use chrono::Duration;
+    use serde_json::json;
+    use spectra_core::GridFilterModel;
+    use tempfile::tempdir;
+
+    async fn open_events() -> (tempfile::TempDir, SqlxEventsBackend) {
+        let dir = tempdir().expect("tempdir");
+        let backend = SqlxEventsBackend::open(dir.path().join("events.sqlite3"))
+            .await
+            .expect("open events");
+        (dir, backend)
+    }
+
+    #[tokio::test]
+    async fn sqlx_query_aggregate_count_timeseries_happy() {
+        let (_dir, backend) = open_events().await;
+        let end = Utc::now();
+        let start = end - Duration::hours(1);
+        for minutes_ago in [5i64, 3, 1] {
+            backend
+                .append_row(
+                    "demo.events",
+                    &json!({"severity": "info"}),
+                    end - Duration::minutes(minutes_ago),
+                    None,
+                )
+                .await
+                .expect("append");
+        }
+
+        let result = backend
+            .query_aggregate(EventsAggregateFilter {
+                table: "demo.events".into(),
+                start,
+                end,
+                partition: None,
+                filter: GridFilterModel::default(),
+                measure: EventMeasure::Count,
+                measure_field: None,
+                time_bucket_secs: Some(3600),
+                group_by_field: None,
+            })
+            .await
+            .expect("query_aggregate");
+
+        match result {
+            EventAggregateResult::TimeSeries { series, headline } => {
+                let total: f64 = series
+                    .iter()
+                    .flat_map(|s| s.points.iter())
+                    .map(|p| p.value)
+                    .sum();
+                assert!(
+                    (total - 3.0).abs() < f64::EPSILON,
+                    "expected point sum 3.0, got {total}"
+                );
+                assert!(
+                    !headline.is_empty(),
+                    "headline cards should be populated for Count TimeSeries"
+                );
+            }
+            EventAggregateResult::Slices { .. } => {
+                panic!("expected TimeSeries, got Slices")
+            }
+        }
+    }
+
+    #[tokio::test]
+    async fn sqlx_query_aggregate_empty_and_pie_sad() {
+        let (_dir, backend) = open_events().await;
+        let end = Utc::now();
+        let start = end - Duration::hours(1);
+
+        let empty = backend
+            .query_aggregate(EventsAggregateFilter {
+                table: "demo.events".into(),
+                start,
+                end,
+                partition: None,
+                filter: GridFilterModel::default(),
+                measure: EventMeasure::Count,
+                measure_field: None,
+                time_bucket_secs: Some(3600),
+                group_by_field: None,
+            })
+            .await
+            .expect("empty TimeSeries");
+        match empty {
+            EventAggregateResult::TimeSeries { series, .. } => {
+                let total: f64 = series
+                    .iter()
+                    .flat_map(|s| s.points.iter())
+                    .map(|p| p.value)
+                    .sum();
+                assert!(
+                    (total - 0.0).abs() < f64::EPSILON,
+                    "empty table should sum to 0"
+                );
+            }
+            EventAggregateResult::Slices { .. } => {
+                panic!("expected TimeSeries, got Slices")
+            }
+        }
+
+        let pie_missing_group = backend
+            .query_aggregate(EventsAggregateFilter {
+                table: "demo.events".into(),
+                start,
+                end,
+                partition: None,
+                filter: GridFilterModel::default(),
+                measure: EventMeasure::Count,
+                measure_field: None,
+                time_bucket_secs: None,
+                group_by_field: None,
+            })
+            .await
+            .expect("no group_by → TimeSeries path");
+        // Without group_by the host path always returns TimeSeries (view not on filter).
+        assert!(matches!(
+            pie_missing_group,
+            EventAggregateResult::TimeSeries { .. }
+        ));
+
+        backend
+            .append_row(
+                "demo.events",
+                &json!({"severity": "info"}),
+                end - Duration::minutes(2),
+                None,
+            )
+            .await
+            .expect("append");
+
+        let pie_unknown = backend
+            .query_aggregate(EventsAggregateFilter {
+                table: "demo.events".into(),
+                start,
+                end,
+                partition: None,
+                filter: GridFilterModel::default(),
+                measure: EventMeasure::Count,
+                measure_field: None,
+                time_bucket_secs: None,
+                group_by_field: Some("no_such_field".into()),
+            })
+            .await
+            .expect("Pie unknown group_by");
+        match pie_unknown {
+            EventAggregateResult::Slices { slices, .. } => {
+                assert!(slices.is_empty(), "unknown group_by → empty slices");
+            }
+            EventAggregateResult::TimeSeries { .. } => {
+                panic!("expected Slices for group_by path, got TimeSeries")
+            }
+        }
     }
 }

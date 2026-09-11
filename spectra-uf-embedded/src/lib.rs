@@ -1,4 +1,4 @@
-//! Spectra SQLite adapters for in-process {{app_title}} hosts.
+//! Spectra SQLite adapters for in-process Unified Field hosts.
 //!
 //! Opens durable metrics and events backends with sqlx (shared `libsqlite3-sys` with
 //! other host SQLite crates) and returns a configured [`spectra::Spectra`] handle.
@@ -9,6 +9,9 @@
 //! - **Spectra SQLite backends** — Installs metrics + events stores via
 //!   [`install_embedded_sqlite`] so the host records counters and events locally.
 //!   [Get started](#install-spectra-sqlite)
+//! - **Event chart aggregates** — [`SqlxEventsBackend`] `query_aggregate` loads matching
+//!   event rows and buckets them for Time series / Line (or groups for Pie / Bar when
+//!   `group_by_field` is set). [Get started](#query-event-aggregates)
 //!
 //! ## Install Spectra SQLite
 //!
@@ -34,6 +37,65 @@
 //!
 //! On success you hold an `Arc<Spectra>` ready for Higgs and kit telemetry. Directory
 //! or SQLite open failures return `Err`. Override paths with the env table below.
+//!
+//! ## Query event aggregates
+//!
+//! Explore chart views call `query_aggregate` on the embedded events file. Event log
+//! stays on `query_rows`. After [`SqlxEventsBackend::open`] (or
+//! [`install_embedded_sqlite`]), append rows then aggregate with Count (or Sum) over a
+//! time range. Empty tables return an empty series; open/query failures return `Err`.
+//!
+//! **Prerequisites:** A writable events SQLite path; at least one in-range row for a
+//! non-empty chart.
+//!
+//! ```rust,ignore
+//! use chrono::{Duration, Utc};
+//! use serde_json::json;
+//! use spectra_core::{
+//!     EventAggregateResult, EventMeasure, EventStorageBackend, EventsAggregateFilter,
+//!     GridFilterModel,
+//! };
+//! use spectra_uf_embedded::SqlxEventsBackend;
+//!
+//! async fn chart_from_embedded_sqlite(dir: &std::path::Path) -> spectra_core::Result<f64> {
+//!     let backend = SqlxEventsBackend::open(dir.join("events.sqlite3")).await?;
+//!     let end = Utc::now();
+//!     let start = end - Duration::hours(1);
+//!     backend
+//!         .append_row(
+//!             "demo.events",
+//!             &json!({"severity": "info"}),
+//!             end - Duration::minutes(5),
+//!             None,
+//!         )
+//!         .await?;
+//!     let result = backend
+//!         .query_aggregate(EventsAggregateFilter {
+//!             table: "demo.events".into(),
+//!             start,
+//!             end,
+//!             partition: None,
+//!             filter: GridFilterModel::default(),
+//!             measure: EventMeasure::Count,
+//!             measure_field: None,
+//!             time_bucket_secs: Some(3600),
+//!             group_by_field: None,
+//!         })
+//!         .await?;
+//!     let total = match result {
+//!         EventAggregateResult::TimeSeries { series, .. } => series
+//!             .iter()
+//!             .flat_map(|s| s.points.iter())
+//!             .map(|p| p.value)
+//!             .sum(),
+//!         other => panic!("expected time series, got {other:?}"),
+//!     };
+//!     assert!((total - 1.0).abs() < f64::EPSILON);
+//!     Ok(total)
+//! }
+//! ```
+//!
+//! Pie and Bar need a non-empty `group_by_field`. Next: Event log stays `query_rows`.
 //!
 //! ## Env
 //!
