@@ -33,6 +33,7 @@ lepton-test-support = { workspace = true, optional = true }
 leptos = { workspace = true, features = ["ssr"] }
 leptos_axum = { workspace = true, default-features = true }
 log.workspace = true
+meson = { workspace = true, optional = true }
 neutrino = { workspace = true, optional = true }
 photon = { workspace = true, default-features = false, optional = true }
 photon-uf-embedded = { workspace = true, optional = true }
@@ -53,6 +54,7 @@ tower-http.workspace = true
 tower-sessions = { workspace = true, optional = true }
 time.workspace = true
 uf-oauth-boot = { workspace = true, optional = true }
+uf-product = { workspace = true, default-features = false, optional = true }
 valence = { workspace = true, default-features = false, optional = true }
 valence-platform = { workspace = true, optional = true }
 
@@ -91,6 +93,11 @@ server-embedded = [
     "lepton-auth/oauth-google",
     "lepton-auth/oauth-github",
     "lepton-auth/webauthn",
+    "dep:meson",
+    "meson/db-sqlite",
+    "meson/backend-local",
+    "meson/scan-pipeline",
+    "meson/scan-chronon",
     "dep:photon",
     "photon/runtime",
     "photon/sqlite",
@@ -104,6 +111,8 @@ server-embedded = [
     "gauge/db-sqlite",
     "dep:gauge-app",
     "gauge-app/ssr",
+    "dep:uf-product",
+    "uf-product/ssr",
     "dep:neutrino",
     "neutrino/ssr",
     "dep:uf-oauth-boot",

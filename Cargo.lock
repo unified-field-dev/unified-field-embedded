@@ -662,6 +662,7 @@ dependencies = [
  "boson-spectra-telemetry",
  "boson-valence-identity",
  "log",
+ "meson",
  "serde_json",
  "tempfile",
  "tokio",
@@ -1096,6 +1097,7 @@ dependencies = [
  "chronon-spectra-telemetry",
  "chronon-valence-identity",
  "log",
+ "meson",
  "serde_json",
  "tempfile",
  "tokio",
@@ -3656,17 +3658,31 @@ checksum = "cf8baf1c55e62ffcace7a9f06f4bd9cd3f0c4beb022d3b367256b91b87513d98"
 [[package]]
 name = "meson"
 version = "0.1.0"
-source = "git+https://github.com/deathbreakfast/meson?branch=main#0fb81bc775512322687da9cd77ce445abfc4463b"
 dependencies = [
+ "anyhow",
  "async-trait",
+ "boson-core",
+ "boson-macros",
+ "boson-runtime",
+ "boson-valence-identity",
  "chrono",
+ "chronon-coordinator",
+ "chronon-coordinator-macros",
+ "chronon-core",
+ "chronon-executor",
+ "chronon-valence-identity",
+ "futures",
+ "log",
  "serde",
  "serde_json",
  "thiserror 2.0.20",
  "tokio",
  "tracing",
+ "uf-photon",
+ "uf-quark 0.1.3 (git+https://github.com/unified-field-dev/quark?branch=main)",
  "uf-valence",
  "uf-valence-codegen",
+ "uuid",
 ]
 
 [[package]]
@@ -5751,6 +5767,7 @@ dependencies = [
  "leptos",
  "leptos_axum",
  "log",
+ "meson",
  "neutrino",
  "photon-axum",
  "photon-uf-embedded",
@@ -5768,6 +5785,7 @@ dependencies = [
  "tower-sessions",
  "uf-oauth-boot",
  "uf-photon",
+ "uf-product",
  "uf-spectra 0.1.3 (git+https://github.com/unified-field-dev/Spectra?branch=main)",
  "uf-valence",
  "uf-welcome",

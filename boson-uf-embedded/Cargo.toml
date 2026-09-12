@@ -15,6 +15,8 @@ boson-runtime = { workspace = true, default-features = false }
 boson-spectra-telemetry = { workspace = true }
 boson-valence-identity = { workspace = true }
 log.workspace = true
+# Force-link `meson_virus_scan` into Boson `auto_registry` (inventory).
+meson = { workspace = true }
 tokio = { workspace = true, features = ["macros", "rt-multi-thread", "sync"] }
 valence = { workspace = true, default-features = false, features = ["mem"] }
 

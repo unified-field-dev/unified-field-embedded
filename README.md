@@ -40,6 +40,9 @@ Details, GitHub-button caveat, and hydrate 404 checklist:
   [Add or remove a uf-app](docs/add-or-remove-uf-app.md).
 - **Domain vs host glue** — Where UI, workers, and models belong.
   [Where to put domain code](docs/where-to-put-domain-code.md).
+- **Auth delivery** — Confirm-account needs live email + SMS. Stock boot is noop;
+  wire Twilio (or another `lepton-smtp` / `lepton-sms` adapter) for real OTP.
+  [Auth / session](docs/auth-and-session.md), [Deploy](docs/deploy.md).
 
 The product surface is always on (no `full` / `server-full` feature gate).
 Unknown routes are 404.

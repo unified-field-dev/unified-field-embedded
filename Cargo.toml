@@ -8,7 +8,6 @@ members = [
     "chronon-uf-embedded",
     "boson-uf-embedded",
     "spectra-uf-embedded",
-    "{{project-name}}-e2e",
 ]
 
 [workspace.package]
@@ -187,6 +186,13 @@ gauge-app = { git = "https://github.com/unified-field-dev/gauge-uf-app", branch 
 neutrino = { git = "https://github.com/unified-field-dev/neutrino", branch = "main", default-features = false }
 neutrino-app = { git = "https://github.com/unified-field-dev/neutrino-uf-app", branch = "main", default-features = false }
 meson-app = { git = "https://github.com/deathbreakfast/meson-uf-app", branch = "main", default-features = false }
+# Local meson (virus scan / quarantine) until deathbreakfast tip publishes scan-pipeline.
+meson = { path = "../../L1-host-stack-kits/meson/meson", default-features = false, features = [
+    "db-sqlite",
+    "backend-local",
+    "scan-pipeline",
+    "scan-chronon",
+] }
 uf-oauth-boot = { git = "https://github.com/unified-field-dev/uf-oauth-boot", branch = "main" }
 record-history = { git = "https://github.com/unified-field-dev/record-history", branch = "main", default-features = false }
 record-history-leptos = { git = "https://github.com/unified-field-dev/record-history", branch = "main", default-features = false }
@@ -303,6 +309,10 @@ lepton-smtp = { path = "../../L1-host-stack-kits/lepton/lepton-smtp" }
 lepton-sms = { path = "../../L1-host-stack-kits/lepton/lepton-sms" }
 lepton-test-support = { path = "../../L1-host-stack-kits/lepton/lepton-test-support", default-features = false }
 lepton-spectra-telemetry = { path = "../../L1-host-stack-kits/lepton/lepton-spectra-telemetry" }
+
+# Local meson virus-scan / quarantine pipeline.
+[patch."https://github.com/deathbreakfast/meson"]
+meson = { path = "../../L1-host-stack-kits/meson/meson", default-features = false }
 
 [workspace.lints.rust]
 missing_docs = "deny"

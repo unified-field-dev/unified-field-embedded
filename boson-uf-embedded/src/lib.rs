@@ -53,6 +53,11 @@ use boson_runtime::Boson;
 use boson_valence_identity::ValenceExecutionContextFactory;
 use valence::ValenceFactory;
 
+// Force-link Meson virus-scan Boson task into `auto_registry` inventory
+// (same pattern as linking `lepton_send_email` via lepton-auth delivery).
+#[allow(unused_imports)]
+use meson::tasks::{MesonVirusScan as _, MesonVirusScanParams as _};
+
 /// Default Boson `SQLite` path for embedded hosts.
 ///
 /// Override with [`SQLITE_PATH_ENV`] rather than editing this constant unless

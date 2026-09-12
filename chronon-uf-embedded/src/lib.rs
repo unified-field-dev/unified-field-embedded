@@ -59,6 +59,10 @@ use tokio::sync::Notify;
 use tokio::task::JoinHandle;
 use valence::{Valence, ValenceFactory};
 
+// Force-link Meson virus-scan Chronon sweeper into `auto_registry` inventory.
+#[allow(unused_imports)]
+use meson::jobs::meson_virus_scan_sweeper as _;
+
 /// Default Chronon `SQLite` path for embedded hosts.
 ///
 /// Override with [`SQLITE_PATH_ENV`] rather than editing this constant unless
