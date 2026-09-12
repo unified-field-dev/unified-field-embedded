@@ -17,6 +17,9 @@ import { gotoHydrated } from "./support/hydration";
 
 const hasSeedToken = Boolean(process.env.UF_E2E_SEED_TOKEN?.trim());
 
+/** Boson + promote can take minutes on a cold host. */
+const SCAN_TIMEOUT_MS = 300_000;
+
 const TINY_PNG = Buffer.from([
   0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d, 0x49,
   0x48, 0x44, 0x52, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x08, 0x02,
@@ -60,13 +63,13 @@ test.describe("Meson virus scan", () => {
     expect(upload.ok()).toBeTruthy();
 
     await gotoHydrated(page, "/meson");
-    // AlwaysClean promotes quickly; list badge should reach Available.
-    await expect(page.getByText(/Available|Pending/i).first()).toBeVisible({
-      timeout: 60_000,
+    // AlwaysClean promotes; list badge should reach Available.
+    await expect(page.getByTestId("meson-file-status-badge").first()).toBeVisible({
+      timeout: SCAN_TIMEOUT_MS,
     });
-    await expect(page.getByText(/Available/i).first()).toBeVisible({
-      timeout: 60_000,
-    });
+    await expect(
+      page.getByTestId("meson-file-status-badge").first(),
+    ).toHaveAttribute("data-status", "available", { timeout: SCAN_TIMEOUT_MS });
   });
 
   test("meson-virus-scan-upload-quarantine-sad", async ({ page, request }) => {
@@ -82,9 +85,9 @@ test.describe("Meson virus scan", () => {
     expect(upload.ok()).toBeTruthy();
 
     await gotoHydrated(page, "/meson");
-    await expect(page.getByText(/Quarantined/i).first()).toBeVisible({
-      timeout: 60_000,
-    });
+    await expect(
+      page.getByTestId("meson-file-status-badge").first(),
+    ).toHaveAttribute("data-status", "quarantined", { timeout: SCAN_TIMEOUT_MS });
   });
 
   test("meson-virus-scan-photon-push-happy", async ({ page, request }) => {
@@ -100,9 +103,9 @@ test.describe("Meson virus scan", () => {
     const upload = await uploadProfilePhoto(page, "push-ok.png", TINY_PNG);
     expect(upload.ok()).toBeTruthy();
 
-    // Stay on /meson; Photon refetch should surface status without full navigation.
-    await expect(page.getByText(/Available|Pending/i).first()).toBeVisible({
-      timeout: 60_000,
+    // Stay on /meson; Photon refetch should surface the row without navigation.
+    await expect(page.getByTestId("meson-file-status-badge").first()).toBeVisible({
+      timeout: SCAN_TIMEOUT_MS,
     });
     expect(page.url()).toBe(before);
   });
