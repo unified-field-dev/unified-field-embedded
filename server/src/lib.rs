@@ -530,7 +530,7 @@ async fn build_router_from_platform(
         #[cfg(feature = "server-embedded")]
         {
             use valence::Model;
-            match counter_app_worker::generated::Counter::get("singleton", &boot_valence).await {
+            match counter_app_worker::generated::Counter::get_used("singleton", &boot_valence, valence::use_!("get Counter in server/src/lib.rs; Valence persistence for this feature path; typed store; visible to session actor / service path.")).await {
                 Ok(None) => match counter_app_worker::service::set_global(0, &boot_valence).await {
                     Ok(_) => log::info!("[server] seeded counter singleton at 0"),
                     Err(e) => log::warn!("[server] seed counter singleton failed: {e}"),
