@@ -220,6 +220,23 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
+  root-deny:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - uses: EmbarkStudios/cargo-deny-action@3c6349835b2b7b196a839186cb8b78e02f7b5f25 # v2.1.1
+        with:
+          command: check
+
+  root-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - name: Security audit
+        run: |
+          cargo install cargo-audit --locked
+          cargo audit
+
   supply-chain:
     needs: generate
     runs-on: ubuntu-latest
