@@ -280,6 +280,7 @@ const platformRoutes: EmbeddedRouteContract[] = [
   platform("embed-secrets", "/secrets", "neutrino-app-root", true),
   platform("embed-secrets-acl", "/secrets/acl", "neutrino-app-root", true),
   platform("embed-meson", "/meson", "meson-app-root"),
+  platform("embed-meson-file-detail", "/meson/files/e2e-smoke-id", "meson-app-root"),
   platform("embed-tag", "/tag", "tag-app-root", true),
   platform("embed-tag-create", "/tag/create", "tag-app-root", true),
   platform("embed-tag-detail", "/tag/example-id", "tag-app-root", true),
