@@ -181,12 +181,8 @@ pub fn install_lab_env(root: &Path, with_photon_key: bool) {
     std::env::set_var("VALENCE_OWNERSHIP_UNIFIED_FETCH", "0");
     std::env::set_var("VALENCE_SQLITE_PATH", root.join("{{project-name}}.sqlite3"));
     std::env::set_var(
-        spectra_uf_embedded::METRICS_PATH_ENV,
-        root.join("spectra-metrics.sqlite3"),
-    );
-    std::env::set_var(
-        spectra_uf_embedded::EVENTS_PATH_ENV,
-        root.join("spectra-events.sqlite3"),
+        spectra_uf_embedded::SPECTRA_STORE_BASE_PATH_ENV,
+        root.join("spectra-stores"),
     );
     std::env::set_var(
         chronon_uf_embedded::SQLITE_PATH_ENV,

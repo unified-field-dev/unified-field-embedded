@@ -1,26 +1,30 @@
 //! Spectra SQLite adapters for in-process Unified Field hosts.
 //!
-//! Opens durable metrics and events backends with sqlx (shared `libsqlite3-sys` with
-//! other host SQLite crates) and returns a configured [`spectra::Spectra`] handle.
-//! Customize paths via env; call [`install_embedded_sqlite`] first in boot order.
+//! Opens one durable metrics + events `SQLite` file pair **per distinct `store:` name**
+//! declared across every `spectra_schema!`/`spectra_metric!` linked into the binary (see
+//! [`spectra_core::collect_distinct_spectra_store_names`]) with sqlx (shared
+//! `libsqlite3-sys` with other host SQLite crates), and returns a configured
+//! [`spectra::Spectra`] handle. Each store's files are physically isolated from every
+//! other store's — no product's telemetry volume or lock contention affects another's.
+//! Customize the base directory via env; call [`install_embedded_sqlite`] first in boot
+//! order.
 //!
 //! ## Features
 //!
-//! - **Spectra SQLite backends** — Installs metrics + events stores via
-//!   [`install_embedded_sqlite`] so the host records counters and events locally.
-//!   [Get started](#install-spectra-sqlite)
+//! - **Per-store Spectra SQLite backends** — Installs one metrics + events file pair per
+//!   declared store via [`install_embedded_sqlite`]. [Get started](#install-spectra-sqlite)
 //! - **Event chart aggregates** — [`SqlxEventsBackend`] `query_aggregate` loads matching
 //!   event rows and buckets them for Time series / Line (or groups for Pie / Bar when
 //!   `group_by_field` is set). [Get started](#query-event-aggregates)
 //!
 //! ## Install Spectra SQLite
 //!
-//! [`install_embedded_sqlite`] builds Spectra with embedded SQLite backends. Call it
-//! first in the host boot order (before Valence telemetry install and other runtimes)
-//! so metrics and events have a place to land.
+//! [`install_embedded_sqlite`] builds Spectra with one embedded SQLite backend pair per
+//! distinct declared `store:` name. Call it first in the host boot order (before Valence
+//! telemetry install and other runtimes) so metrics and events have a place to land.
 //!
-//! **Prerequisites:** Writable parents for metrics and events paths; sqlx SQLite
-//! available in the dependency graph.
+//! **Prerequisites:** A writable base directory; sqlx SQLite available in the
+//! dependency graph.
 //!
 //! ```rust,ignore
 //! use std::sync::Arc;
@@ -30,13 +34,14 @@
 //! async fn boot() -> anyhow::Result<Arc<Spectra>> {
 //!     let spectra = install_embedded_sqlite().await?;
 //!     assert!(Arc::strong_count(&spectra) >= 1);
-//!     println!("spectra sqlite backends installed");
+//!     println!("spectra sqlite backends installed, one file pair per declared store");
 //!     Ok(spectra)
 //! }
 //! ```
 //!
 //! On success you hold an `Arc<Spectra>` ready for Higgs and kit telemetry. Directory
-//! or SQLite open failures return `Err`. Override paths with the env table below.
+//! or SQLite open failures for any one store return `Err`. Override the base directory
+//! with the env var below.
 //!
 //! ## Query event aggregates
 //!
@@ -101,8 +106,12 @@
 //!
 //! | Variable | Default |
 //! |----------|---------|
-//! | `SPECTRA_METRICS_SQLITE_PATH` | `data/spectra-metrics.sqlite3` |
-//! | `SPECTRA_EVENTS_SQLITE_PATH` | `data/spectra-events.sqlite3` |
+//! | `SPECTRA_STORE_BASE_PATH` | `data/spectra-stores` |
+//!
+//! Each store's files land at `{base}/{store}/spectra-{metrics,events}.sqlite3`, e.g.
+//! `data/spectra-stores/default/spectra-metrics.sqlite3` or
+//! `data/spectra-stores/counter/spectra-events.sqlite3` for a product declaring
+//! `store: "counter"`.
 
 mod sqlx_store;
 
@@ -113,51 +122,33 @@ use spectra::Spectra;
 
 pub use sqlx_store::{SqlxEventsBackend, SqlxMetricsBackend};
 
-/// Default metrics `SQLite` path for embedded hosts.
+/// Default base directory for per-store `SQLite` files.
 ///
 /// # Examples
 ///
 /// ```rust,ignore
-/// use spectra_uf_embedded::DEFAULT_METRICS_PATH;
-/// assert_eq!(DEFAULT_METRICS_PATH, "data/spectra-metrics.sqlite3");
+/// use spectra_uf_embedded::DEFAULT_STORE_BASE_PATH;
+/// assert_eq!(DEFAULT_STORE_BASE_PATH, "data/spectra-stores");
 /// ```
-pub const DEFAULT_METRICS_PATH: &str = "data/spectra-metrics.sqlite3";
-/// Default events `SQLite` path for embedded hosts.
-///
-/// # Examples
-///
-/// ```rust,ignore
-/// use spectra_uf_embedded::DEFAULT_EVENTS_PATH;
-/// assert_eq!(DEFAULT_EVENTS_PATH, "data/spectra-events.sqlite3");
-/// ```
-pub const DEFAULT_EVENTS_PATH: &str = "data/spectra-events.sqlite3";
+pub const DEFAULT_STORE_BASE_PATH: &str = "data/spectra-stores";
 
-/// Env var for metrics `SQLite` path.
+/// Env var overriding the per-store `SQLite` base directory.
 ///
 /// # Examples
 ///
 /// ```rust,ignore
-/// use spectra_uf_embedded::METRICS_PATH_ENV;
-/// assert_eq!(METRICS_PATH_ENV, "SPECTRA_METRICS_SQLITE_PATH");
+/// use spectra_uf_embedded::SPECTRA_STORE_BASE_PATH_ENV;
+/// assert_eq!(SPECTRA_STORE_BASE_PATH_ENV, "SPECTRA_STORE_BASE_PATH");
 /// ```
-pub const METRICS_PATH_ENV: &str = "SPECTRA_METRICS_SQLITE_PATH";
-/// Env var for events `SQLite` path.
-///
-/// # Examples
-///
-/// ```rust,ignore
-/// use spectra_uf_embedded::EVENTS_PATH_ENV;
-/// assert_eq!(EVENTS_PATH_ENV, "SPECTRA_EVENTS_SQLITE_PATH");
-/// ```
-pub const EVENTS_PATH_ENV: &str = "SPECTRA_EVENTS_SQLITE_PATH";
+pub const SPECTRA_STORE_BASE_PATH_ENV: &str = "SPECTRA_STORE_BASE_PATH";
 
 /// Resolve a Spectra path from env or the given default.
 ///
 /// # Examples
 ///
 /// ```rust,ignore
-/// use spectra_uf_embedded::{path_from_env, METRICS_PATH_ENV, DEFAULT_METRICS_PATH};
-/// println!("{}", path_from_env(METRICS_PATH_ENV, DEFAULT_METRICS_PATH).display());
+/// use spectra_uf_embedded::{path_from_env, SPECTRA_STORE_BASE_PATH_ENV, DEFAULT_STORE_BASE_PATH};
+/// println!("{}", path_from_env(SPECTRA_STORE_BASE_PATH_ENV, DEFAULT_STORE_BASE_PATH).display());
 /// ```
 pub(crate) fn path_from_env(var: &str, default: &str) -> PathBuf {
     std::env::var(var)
@@ -207,39 +198,67 @@ pub(crate) fn restrict_sqlite_file_permissions(path: &Path) -> anyhow::Result<()
     Ok(())
 }
 
-/// Install Spectra with durable `SQLite` backends for embedded hosts.
+/// Install Spectra with durable, per-store `SQLite` backends for embedded hosts.
 ///
-/// Call first in host boot order before Valence telemetry and other runtimes.
+/// Opens one metrics + events file pair per distinct `store:` name declared across every
+/// `spectra_schema!`/`spectra_metric!` linked into the binary (see
+/// [`spectra_core::collect_distinct_spectra_store_names`]), so each product's telemetry is
+/// physically isolated on disk. Call first in host boot order before Valence telemetry and
+/// other runtimes.
 ///
 /// # Errors
 ///
-/// Returns an error if directories cannot be created, `SQLite` open fails, or Spectra build fails.
+/// Returns an error if any store's directory cannot be created, `SQLite` open fails, a
+/// declared store name is not a valid Spectra identifier, or Spectra build fails.
 ///
 /// # Examples
 ///
 /// See [Install Spectra SQLite](index.html#install-spectra-sqlite).
 pub async fn install_embedded_sqlite() -> anyhow::Result<Arc<Spectra>> {
-    // Call first in host boot. Paths: SPECTRA_METRICS_SQLITE_PATH /
-    // SPECTRA_EVENTS_SQLITE_PATH (see Env table on the crate root).
-    let metrics_path = path_from_env(METRICS_PATH_ENV, DEFAULT_METRICS_PATH);
-    let events_path = path_from_env(EVENTS_PATH_ENV, DEFAULT_EVENTS_PATH);
-    ensure_parent(&metrics_path)?;
-    ensure_parent(&events_path)?;
+    // Call first in host boot. Base directory: SPECTRA_STORE_BASE_PATH (see Env table on
+    // the crate root); one subdirectory per declared store under it.
+    let base = path_from_env(SPECTRA_STORE_BASE_PATH_ENV, DEFAULT_STORE_BASE_PATH);
+    let mut builder = Spectra::builder();
 
-    let metrics = SqlxMetricsBackend::open(&metrics_path)
-        .await
-        .map_err(|e| anyhow::anyhow!("Spectra metrics SQLite open failed: {e}"))?;
-    let events = SqlxEventsBackend::open(&events_path)
-        .await
-        .map_err(|e| anyhow::anyhow!("Spectra events SQLite open failed: {e}"))?;
-    restrict_sqlite_file_permissions(&metrics_path)
-        .map_err(|e| anyhow::anyhow!("Spectra metrics SQLite chmod 0600 failed: {e}"))?;
-    restrict_sqlite_file_permissions(&events_path)
-        .map_err(|e| anyhow::anyhow!("Spectra events SQLite chmod 0600 failed: {e}"))?;
+    for store in spectra_core::collect_distinct_spectra_store_names() {
+        spectra_core::validate_spectra_ident(&store)
+            .map_err(|e| anyhow::anyhow!("invalid spectra store name {store:?}: {e}"))?;
 
-    let spectra = Spectra::builder()
-        .metrics_backend(Arc::new(metrics))
-        .events_backend(Arc::new(events))
+        let dir = base.join(&store);
+        let metrics_path = dir.join("spectra-metrics.sqlite3");
+        let events_path = dir.join("spectra-events.sqlite3");
+        ensure_parent(&metrics_path)?;
+        ensure_parent(&events_path)?;
+
+        let metrics = SqlxMetricsBackend::open(&metrics_path)
+            .await
+            .map_err(|e| anyhow::anyhow!("Spectra metrics SQLite open failed ({store}): {e}"))?;
+        let events = SqlxEventsBackend::open(&events_path)
+            .await
+            .map_err(|e| anyhow::anyhow!("Spectra events SQLite open failed ({store}): {e}"))?;
+        restrict_sqlite_file_permissions(&metrics_path).map_err(|e| {
+            anyhow::anyhow!("Spectra metrics SQLite chmod 0600 failed ({store}): {e}")
+        })?;
+        restrict_sqlite_file_permissions(&events_path).map_err(|e| {
+            anyhow::anyhow!("Spectra events SQLite chmod 0600 failed ({store}): {e}")
+        })?;
+
+        log::info!(
+            "spectra.embedded.store_opened: store={store} metrics_path={} events_path={}",
+            metrics_path.display(),
+            events_path.display(),
+        );
+
+        builder = if store == "default" {
+            builder
+                .metrics_backend(Arc::new(metrics))
+                .events_backend(Arc::new(events))
+        } else {
+            builder.store_backend(store, Arc::new(metrics), Arc::new(events))
+        };
+    }
+
+    let spectra = builder
         .embedded()
         .build()
         .map_err(|e| anyhow::anyhow!("Spectra SQLite build failed: {e}"))?;
@@ -247,9 +266,34 @@ pub async fn install_embedded_sqlite() -> anyhow::Result<Arc<Spectra>> {
     Ok(Arc::new(spectra))
 }
 
+// Test-only schemas so `collect_distinct_spectra_store_names()` has non-default stores to
+// isolate in `install_embedded_sqlite_isolates_stores_happy` below. Declared at module
+// scope (not inside `mod tests`) so `inventory::submit!` links them into the test binary
+// exactly once regardless of which test file triggers `SchemaRegistry::global()` first.
+#[cfg(test)]
+spectra::spectra_metric! {
+    SpectraUfEmbeddedIsolationTestACounter {
+        store: "spectra_uf_embedded_isolation_test_a",
+        name: "spectra_uf_embedded_isolation_test_a_counter",
+        version: "0.1.0",
+        description: "test-only metric proving per-store SQLite file isolation",
+    }
+}
+
+#[cfg(test)]
+spectra::spectra_metric! {
+    SpectraUfEmbeddedIsolationTestBCounter {
+        store: "spectra_uf_embedded_isolation_test_b",
+        name: "spectra_uf_embedded_isolation_test_b_counter",
+        version: "0.1.0",
+        description: "test-only metric proving per-store SQLite file isolation",
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    use spectra_core::{MetricsQueryRange, MetricsStorageBackend};
 
     static ENV_LOCK: tokio::sync::Mutex<()> = tokio::sync::Mutex::const_new(());
 
@@ -257,8 +301,7 @@ mod tests {
     async fn install_embedded_sqlite_happy_path() {
         let _guard = ENV_LOCK.lock().await;
         let dir = tempfile::tempdir().expect("tempdir");
-        std::env::set_var(METRICS_PATH_ENV, dir.path().join("m.sqlite3"));
-        std::env::set_var(EVENTS_PATH_ENV, dir.path().join("e.sqlite3"));
+        std::env::set_var(SPECTRA_STORE_BASE_PATH_ENV, dir.path());
         let spectra = install_embedded_sqlite()
             .await
             .expect("install_embedded_sqlite");
@@ -266,16 +309,18 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn install_embedded_sqlite_parent_not_dir_sad() {
+    async fn install_embedded_sqlite_per_store_dir_not_writable_sad() {
         let _guard = ENV_LOCK.lock().await;
         let dir = tempfile::tempdir().expect("tempdir");
-        let blocker = dir.path().join("not-a-dir");
+        // "default" sorts first among distinct store names (BTreeSet) and always exists,
+        // so blocking its subdirectory with a plain file reproduces a per-store open
+        // failure without depending on which other stores are linked into this binary.
+        let blocker = dir.path().join("default");
         std::fs::write(&blocker, b"x").expect("write blocker");
-        std::env::set_var(METRICS_PATH_ENV, blocker.join("m.sqlite3"));
-        std::env::set_var(EVENTS_PATH_ENV, dir.path().join("e.sqlite3"));
+        std::env::set_var(SPECTRA_STORE_BASE_PATH_ENV, dir.path());
 
         let Err(err) = install_embedded_sqlite().await else {
-            panic!("metrics parent is a file");
+            panic!("default store's directory is a file, not a directory");
         };
         let msg = err.to_string();
         assert!(
@@ -284,6 +329,98 @@ mod tests {
                 || msg.contains("File exists")
                 || msg.contains("os error"),
             "unexpected error: {msg}"
+        );
+    }
+
+    #[tokio::test]
+    // Two deliberately parallel store-a/store-b bindings read more clearly than
+    // artificially distinct names here; clippy's `similar_names` only flags the trailing
+    // letter.
+    #[allow(clippy::similar_names)]
+    async fn install_embedded_sqlite_isolates_stores_happy() {
+        let _guard = ENV_LOCK.lock().await;
+        let dir = tempfile::tempdir().expect("tempdir");
+        std::env::set_var(SPECTRA_STORE_BASE_PATH_ENV, dir.path());
+
+        let spectra = install_embedded_sqlite()
+            .await
+            .expect("install_embedded_sqlite");
+        let router = spectra.router();
+        let ts = chrono::Utc::now();
+
+        router
+            .resolve_metrics("spectra_uf_embedded_isolation_test_a_counter")
+            .record_counter(
+                "spectra_uf_embedded_isolation_test_a_counter",
+                &serde_json::json!({}),
+                1,
+                ts,
+            )
+            .await
+            .expect("record store a counter");
+        router
+            .resolve_metrics("spectra_uf_embedded_isolation_test_b_counter")
+            .record_counter(
+                "spectra_uf_embedded_isolation_test_b_counter",
+                &serde_json::json!({}),
+                1,
+                ts,
+            )
+            .await
+            .expect("record store b counter");
+
+        // Open each store's file directly (bypassing the router entirely) to prove the
+        // rows are physically separated on disk, not just logically namespaced.
+        let store_a_file = SqlxMetricsBackend::open(
+            dir.path()
+                .join("spectra_uf_embedded_isolation_test_a")
+                .join("spectra-metrics.sqlite3"),
+        )
+        .await
+        .expect("open store a file directly");
+        let store_b_file = SqlxMetricsBackend::open(
+            dir.path()
+                .join("spectra_uf_embedded_isolation_test_b")
+                .join("spectra-metrics.sqlite3"),
+        )
+        .await
+        .expect("open store b file directly");
+
+        let range = |metric_name: &str| MetricsQueryRange {
+            metric_name: metric_name.to_string(),
+            start: ts - chrono::Duration::seconds(5),
+            end: ts + chrono::Duration::seconds(5),
+            label_matchers: vec![],
+        };
+
+        let a_has_a = store_a_file
+            .query_range(range("spectra_uf_embedded_isolation_test_a_counter"))
+            .await
+            .expect("query store a file for its own counter");
+        assert_eq!(a_has_a.len(), 1, "store a's file must contain its own row");
+
+        let a_has_b = store_a_file
+            .query_range(range("spectra_uf_embedded_isolation_test_b_counter"))
+            .await
+            .expect("query store a file for store b's counter");
+        assert!(
+            a_has_b.is_empty(),
+            "store a's file must not contain store b's row"
+        );
+
+        let b_has_b = store_b_file
+            .query_range(range("spectra_uf_embedded_isolation_test_b_counter"))
+            .await
+            .expect("query store b file for its own counter");
+        assert_eq!(b_has_b.len(), 1, "store b's file must contain its own row");
+
+        let b_has_a = store_b_file
+            .query_range(range("spectra_uf_embedded_isolation_test_a_counter"))
+            .await
+            .expect("query store b file for store a's counter");
+        assert!(
+            b_has_a.is_empty(),
+            "store b's file must not contain store a's row"
         );
     }
 }

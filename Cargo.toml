@@ -314,5 +314,12 @@ lepton-spectra-telemetry = { path = "../../L1-host-stack-kits/lepton/lepton-spec
 [patch."https://github.com/deathbreakfast/meson"]
 meson = { path = "../../L1-host-stack-kits/meson/meson", default-features = false }
 
+# TEMPORARY dev-only patch for spectra_store_isolation_01 — remove once the Spectra PR
+# (SpectraBuilder::store_backend, per-store install_embedded_sqlite) merges upstream and
+# this repo's uf-spectra / uf-spectra-core git rev is bumped past it.
+[patch."https://github.com/unified-field-dev/Spectra"]
+uf-spectra = { path = "../../L0-upstream-cores/spectra/spectra", default-features = false }
+uf-spectra-core = { path = "../../L0-upstream-cores/spectra/spectra-core" }
+
 [workspace.lints.rust]
 missing_docs = "deny"

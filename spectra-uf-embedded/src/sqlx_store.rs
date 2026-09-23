@@ -497,6 +497,9 @@ mod query_aggregate_tests {
                 measure_field: None,
                 time_bucket_secs: Some(3600),
                 group_by_field: None,
+                row_fields: Vec::new(),
+                pivot_field: None,
+                view: EventExploreView::TimeSeries,
             })
             .await
             .expect("query_aggregate");
@@ -520,6 +523,9 @@ mod query_aggregate_tests {
             EventAggregateResult::Slices { .. } => {
                 panic!("expected TimeSeries, got Slices")
             }
+            EventAggregateResult::Pivot { .. } => {
+                panic!("expected TimeSeries, got Pivot")
+            }
         }
     }
 
@@ -540,6 +546,9 @@ mod query_aggregate_tests {
                 measure_field: None,
                 time_bucket_secs: Some(3600),
                 group_by_field: None,
+                row_fields: Vec::new(),
+                pivot_field: None,
+                view: EventExploreView::TimeSeries,
             })
             .await
             .expect("empty TimeSeries");
@@ -558,6 +567,9 @@ mod query_aggregate_tests {
             EventAggregateResult::Slices { .. } => {
                 panic!("expected TimeSeries, got Slices")
             }
+            EventAggregateResult::Pivot { .. } => {
+                panic!("expected TimeSeries, got Pivot")
+            }
         }
 
         let pie_missing_group = backend
@@ -571,6 +583,9 @@ mod query_aggregate_tests {
                 measure_field: None,
                 time_bucket_secs: None,
                 group_by_field: None,
+                row_fields: Vec::new(),
+                pivot_field: None,
+                view: EventExploreView::TimeSeries,
             })
             .await
             .expect("no group_by → TimeSeries path");
@@ -601,6 +616,9 @@ mod query_aggregate_tests {
                 measure_field: None,
                 time_bucket_secs: None,
                 group_by_field: Some("no_such_field".into()),
+                row_fields: Vec::new(),
+                pivot_field: None,
+                view: EventExploreView::TimeSeries,
             })
             .await
             .expect("Pie unknown group_by");
@@ -610,6 +628,9 @@ mod query_aggregate_tests {
             }
             EventAggregateResult::TimeSeries { .. } => {
                 panic!("expected Slices for group_by path, got TimeSeries")
+            }
+            EventAggregateResult::Pivot { .. } => {
+                panic!("expected Slices for group_by path, got Pivot")
             }
         }
     }
