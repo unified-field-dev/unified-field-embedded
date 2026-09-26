@@ -111,7 +111,8 @@
 //! Each store's files land at `{base}/{store}/spectra-{metrics,events}.sqlite3`, e.g.
 //! `data/spectra-stores/default/spectra-metrics.sqlite3` or
 //! `data/spectra-stores/counter/spectra-events.sqlite3` for a product declaring
-//! `store: "counter"`.
+//! `store: "counter"`. Isolation is always on for this installer — there is no shared-file
+//! mode or `SPECTRA_STORE_ISOLATION` switch.
 
 mod sqlx_store;
 

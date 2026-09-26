@@ -185,9 +185,8 @@ gauge = { git = "https://github.com/unified-field-dev/gauge", branch = "main", d
 gauge-app = { git = "https://github.com/unified-field-dev/gauge-uf-app", branch = "main", default-features = false }
 neutrino = { git = "https://github.com/unified-field-dev/neutrino", branch = "main", default-features = false }
 neutrino-app = { git = "https://github.com/unified-field-dev/neutrino-uf-app", branch = "main", default-features = false }
-meson-app = { git = "https://github.com/deathbreakfast/meson-uf-app", branch = "main", default-features = false }
-# Local meson (virus scan / quarantine) until deathbreakfast tip publishes scan-pipeline.
-meson = { path = "../../L1-host-stack-kits/meson/meson", default-features = false, features = [
+meson-app = { git = "https://github.com/unified-field-dev/meson-uf-app", branch = "main", default-features = false }
+meson = { git = "https://github.com/unified-field-dev/meson", branch = "main", default-features = false, features = [
     "db-sqlite",
     "backend-local",
     "scan-pipeline",
@@ -208,7 +207,7 @@ chronon-app = { git = "https://github.com/unified-field-dev/chronon-uf-app", bra
 boson-app = { git = "https://github.com/unified-field-dev/boson-uf-app", branch = "main", default-features = false }
 photon-app = { git = "https://github.com/unified-field-dev/photon-uf-app", branch = "main", default-features = false }
 spectra-app = { git = "https://github.com/unified-field-dev/spectra-uf-app", branch = "main", default-features = false }
-valence-app = { git = "https://github.com/deathbreakfast/valence-uf-app", branch = "main", default-features = false }
+valence-app = { git = "https://github.com/unified-field-dev/valence-uf-app", branch = "main", default-features = false }
 uf-component-preview = { package = "uf-component-preview", git = "https://github.com/unified-field-dev/unified-field-product", branch = "main", default-features = false }
 
 higgs-macros = { git = "https://github.com/unified-field-dev/higgs", branch = "main" }
@@ -248,11 +247,7 @@ js-minify = false
 # Kits still declare Valence / Chronon / Orbital via crates.io. Redirect onto the
 # same uf-dev git tips as [workspace.dependencies] so types unify (and pin
 # parcel_selectors via Orbital's =0.28.2).
-[patch."https://github.com/deathbreakfast/chronon-coordinator"]
-chronon-coordinator = { git = "https://github.com/unified-field-dev/chronon-coordinator", branch = "main" }
 
-[patch."https://github.com/deathbreakfast/boson-coordinator"]
-boson-coordinator = { git = "https://github.com/unified-field-dev/boson-coordinator", branch = "main" }
 
 [patch.crates-io]
 uf-valence = { git = "https://github.com/unified-field-dev/valence", branch = "main" }
@@ -298,28 +293,7 @@ orbital-scheduler = { git = "https://github.com/unified-field-dev/orbital", bran
 orbital-motion = { git = "https://github.com/unified-field-dev/orbital", branch = "main" }
 orbital-style = { git = "https://github.com/unified-field-dev/orbital", branch = "main" }
 
-# Local lepton (Meson FileByteBackend) until uf-dev lepton publishes the lift.
-[patch."https://github.com/unified-field-dev/lepton"]
-lepton-auth = { path = "../../L1-host-stack-kits/lepton/lepton-auth", default-features = false }
-lepton-auth-ui = { path = "../../L1-host-stack-kits/lepton/lepton-auth-ui", default-features = false }
-lepton-host-adapter = { path = "../../L1-host-stack-kits/lepton/lepton-host-adapter", default-features = false }
-lepton-identity = { path = "../../L1-host-stack-kits/lepton/lepton-identity", default-features = false }
-lepton = { path = "../../L1-host-stack-kits/lepton/lepton", default-features = false }
-lepton-smtp = { path = "../../L1-host-stack-kits/lepton/lepton-smtp" }
-lepton-sms = { path = "../../L1-host-stack-kits/lepton/lepton-sms" }
-lepton-test-support = { path = "../../L1-host-stack-kits/lepton/lepton-test-support", default-features = false }
-lepton-spectra-telemetry = { path = "../../L1-host-stack-kits/lepton/lepton-spectra-telemetry" }
 
-# Local meson virus-scan / quarantine pipeline.
-[patch."https://github.com/deathbreakfast/meson"]
-meson = { path = "../../L1-host-stack-kits/meson/meson", default-features = false }
-
-# TEMPORARY dev-only patch for spectra_store_isolation_01 — remove once the Spectra PR
-# (SpectraBuilder::store_backend, per-store install_embedded_sqlite) merges upstream and
-# this repo's uf-spectra / uf-spectra-core git rev is bumped past it.
-[patch."https://github.com/unified-field-dev/Spectra"]
-uf-spectra = { path = "../../L0-upstream-cores/spectra/spectra", default-features = false }
-uf-spectra-core = { path = "../../L0-upstream-cores/spectra/spectra-core" }
 
 [workspace.lints.rust]
 missing_docs = "deny"

@@ -41,4 +41,4 @@ highlight = "all"
 [sources]
 unknown-registry = "deny"
 unknown-git = "warn"
-allow-org = { github = ["unified-field-dev", "deathbreakfast"] }
+allow-org = { github = ["unified-field-dev"] }
