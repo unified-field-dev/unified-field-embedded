@@ -113,6 +113,12 @@ jobs:
         if: ${{ "{{" }} steps.playwright-cache.outputs.cache-hit == 'true' {{ "}}" }}
         working-directory: end2end
         run: npx playwright install-deps chromium
+      # end-to-end exits 0 when its build fails, so build first to fail loudly.
+      - name: cargo leptos build
+        run: >
+          cargo leptos build --project {{project-name}} --split
+          --bin-features ssr,server-embedded,e2e-host-conformance
+          --lib-features hydrate
       - name: cargo leptos end-to-end (host conformance)
         env:
           CI: true
