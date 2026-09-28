@@ -59,7 +59,8 @@ pub async fn sync_permission_manifests_for_valence(valence: &Valence) -> anyhow:
         stats.domains_existing,
         stats.permissions_existing
     );
-    if let Err(e) = gauge::gluon_operator_groups::ensure_gluon_default_operator_groups(valence).await
+    if let Err(e) =
+        gauge::gluon_operator_groups::ensure_gluon_default_operator_groups(valence).await
     {
         log::warn!("[server] Gluon operator group seed skipped or failed: {e}");
     }

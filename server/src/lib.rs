@@ -232,10 +232,10 @@ use tower_sessions::{Expiry, SessionManagerLayer};
 mod expiring_session_store;
 #[cfg(feature = "server-embedded")]
 mod permission_manifest_sync;
-#[cfg(feature = "server-embedded")]
-mod super_user_boot;
 pub mod platform;
 mod request_hardening;
+#[cfg(feature = "server-embedded")]
+mod super_user_boot;
 
 #[cfg(feature = "e2e-host-conformance")]
 mod e2e_support;
@@ -495,7 +495,8 @@ async fn build_router_from_platform(
         }
         // Ensure Super User group; promote UF_SUPER_USER_EMAILS when users exist.
         #[cfg(feature = "server-embedded")]
-        if let Err(e) = super_user_boot::ensure_and_seed_super_users_for_valence(&boot_valence).await
+        if let Err(e) =
+            super_user_boot::ensure_and_seed_super_users_for_valence(&boot_valence).await
         {
             log::warn!("[server] super user boot seed failed: {e}");
         }
