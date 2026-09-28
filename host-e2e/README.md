@@ -1,4 +1,4 @@
-# {{project-name}}-e2e
+# host-e2e
 
 In-process **IsolatedLab** correctness scenarios for the embedded host composition
 (Spectra → Valence → Chronon → Boson → Photon → Higgs). No UI / Playwright.
@@ -7,7 +7,7 @@ In-process **IsolatedLab** correctness scenarios for the embedded host compositi
 
 ```bash
 export CARGO_BUILD_JOBS=1
-cargo test -p {{project-name}}-e2e -- --test-threads=1
+cargo test -p host-e2e -- --test-threads=1
 ```
 
 ## Scenario catalog

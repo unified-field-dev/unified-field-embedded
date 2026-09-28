@@ -6,7 +6,7 @@ failures, and real Lepton session propagation across app families.
 
 Product CRUD, queue, scheduler, permission, secret, and telemetry catalogs stay
 in their product repositories. This suite is also separate from the Layer 2
-`{{project-name}}-e2e` in-process composition gate.
+`host-e2e` in-process composition gate.
 
 ## Run the full suite
 

@@ -44,7 +44,7 @@ jobs:
       - name: cargo clippy (adapters + IsolatedLab)
         run: >
           cargo clippy -p photon-uf-embedded -p boson-uf-embedded
-          -p chronon-uf-embedded -p spectra-uf-embedded -p {{project-name}}-e2e
+          -p chronon-uf-embedded -p spectra-uf-embedded -p host-e2e
           --all-targets --locked -- -D warnings
       - name: cargo clippy (server)
         run: cargo clippy -p server --features server-embedded --all-targets --locked -- -D warnings
@@ -64,7 +64,7 @@ jobs:
           cargo test -p server --features server-embedded,e2e-host-conformance --lib e2e_support --locked
           cargo test -p app --features ssr,server-embedded --test full_product_surface_hygiene --locked
       - name: Layer 2 IsolatedLab
-        run: cargo test -p {{project-name}}-e2e --locked -- --test-threads=1
+        run: cargo test -p host-e2e --locked -- --test-threads=1
 
   e2e:
     runs-on: ubuntu-latest

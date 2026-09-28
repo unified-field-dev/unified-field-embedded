@@ -2544,6 +2544,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "host-e2e"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "boson-uf-embedded",
+ "chronon-uf-embedded",
+ "higgs",
+ "photon-uf-embedded",
+ "serde_json",
+ "spectra-uf-embedded",
+ "tempfile",
+ "tokio",
+ "uf-spectra",
+ "uf-valence",
+]
+
+[[package]]
 name = "html-escape"
 version = "0.2.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"

@@ -1,11 +1,11 @@
 //! Layer 2 `IsolatedLab` scenarios for embedded host composition.
 //!
 //! Scenario IDs:
-//! - [`{{crate_name}}_e2e::scenarios::HOST_COMPOSITION_BOOT_HAPPY`]
-//! - [`{{crate_name}}_e2e::scenarios::HOST_COMPOSITION_PHOTON_KEY_SAD`]
+//! - [`host_e2e::scenarios::HOST_COMPOSITION_BOOT_HAPPY`]
+//! - [`host_e2e::scenarios::HOST_COMPOSITION_PHOTON_KEY_SAD`]
 
-use {{crate_name}}_e2e::boot_isolated_lab;
-use {{crate_name}}_e2e::scenarios::{HOST_COMPOSITION_BOOT_HAPPY, HOST_COMPOSITION_PHOTON_KEY_SAD};
+use host_e2e::boot_isolated_lab;
+use host_e2e::scenarios::{HOST_COMPOSITION_BOOT_HAPPY, HOST_COMPOSITION_PHOTON_KEY_SAD};
 
 #[tokio::test(flavor = "multi_thread")]
 async fn host_composition_boot_happy() {

@@ -26,7 +26,7 @@ cargo test -p server --features server-embedded --lib --test listen_addr_contrac
 cargo test -p server --features server-embedded,e2e-host-conformance --lib e2e_support
 cargo test -p app --features ssr,server-embedded --test full_product_surface_hygiene
 cargo clippy -p photon-uf-embedded -p boson-uf-embedded -p chronon-uf-embedded \
-  -p spectra-uf-embedded -p {{project-name}}-e2e \
+  -p spectra-uf-embedded -p host-e2e \
   --all-targets -- -D warnings
 cargo clippy -p server --features server-embedded --all-targets -- -D warnings
 ```
@@ -52,7 +52,7 @@ cargo clippy -p server --features server-embedded --all-targets -- -D warnings
 ## Layer 2 — E2E IsolatedLab (CI)
 
 ```bash
-cargo test -p {{project-name}}-e2e -- --test-threads=1
+cargo test -p host-e2e -- --test-threads=1
 ```
 
 | Scenario ID | Kind | Asserts |
@@ -60,7 +60,7 @@ cargo test -p {{project-name}}-e2e -- --test-threads=1
 | `host-composition-boot-happy` | validating happy | Spectra + Valence + Chronon + Boson + Photon boot; Higgs exposes subsystems |
 | `host-composition-photon-key-sad` | validating sad | Missing `PHOTON_TRANSPORT_KEY` fails closed |
 
-Harness: [`{{project-name}}-e2e`](../{{project-name}}-e2e/README.md).
+Harness: [`host-e2e`](../host-e2e/README.md).
 
 ## Playwright host conformance (CI)
 
@@ -84,11 +84,11 @@ fixture safety contract.
 
 Match `.github/workflows/ci.yml` on a generated host (or upstream
 `.github/workflows/template-ci.yml`, which generates first): `fmt`, `clippy`
-(adapters + `{{project-name}}-e2e` +
+(adapters + `host-e2e` +
 server), Layer 1 + Layer 2 under `test`, and the `e2e` Playwright job with
 `UF_E2E_SEED_TOKEN` + `VALENCE_SQLITE_PATH=:memory:`.
 
 ## Notes
 
 - Prefer `*_happy_path` / `*_sad` test names for audit detection.
-- Do not treat `end2end/` Playwright as a substitute for `{{project-name}}-e2e`.
+- Do not treat `end2end/` Playwright as a substitute for `host-e2e`.

@@ -821,7 +821,7 @@ pub fn listen_addr() -> anyhow::Result<SocketAddr> {
 ///
 /// Resolves [`listen_addr`], builds the host via [`build_host`], binds TCP, and
 /// serves with graceful shutdown. After Axum stops, signals Chronon shutdown and
-/// aborts the run loop (same pattern as `{{crate_name}}_e2e::IsolatedLab` Drop).
+/// aborts the run loop (same pattern as `host_e2e::IsolatedLab` Drop).
 /// Call from `main` (see `server/src/main.rs`) at process startup.
 ///
 /// # Errors

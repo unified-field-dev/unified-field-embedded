@@ -89,7 +89,7 @@ examples, env). On a **generated** tree:
 ```bash
 cargo doc -p server -p app -p frontend -p photon-uf-embedded \
   -p chronon-uf-embedded -p boson-uf-embedded -p spectra-uf-embedded \
-  -p {{project-name}}-e2e --no-deps --open
+  -p host-e2e --no-deps --open
 ```
 
 Start at `server` (`compose_embedded_platform`, `build_router`, `listen_addr`) and
@@ -104,7 +104,7 @@ Start at `server` (`compose_embedded_platform`, `build_router`, `listen_addr`) a
 | `app` | Route table customize surface (`MainAppRouteChildren`) |
 | `frontend` | Stock WASM hydrate entry (rarely edited) |
 | `*-uf-embedded` crates | In-process builders for jobs, queues, realtime, and telemetry |
-| `{{project-name}}-e2e` | IsolatedLab composition scenarios |
+| `host-e2e` | IsolatedLab composition scenarios |
 
 ## Logging
 
@@ -119,7 +119,7 @@ On a **generated** host:
 
 ```bash
 CARGO_BUILD_JOBS=1 cargo check -p server --features server-embedded
-cargo test -p {{project-name}}-e2e -- --test-threads=1
+cargo test -p host-e2e -- --test-threads=1
 cargo test -p app --features ssr,server-embedded --test full_product_surface_hygiene
 
 UF_E2E_SEED_TOKEN="$(openssl rand -hex 32)" \

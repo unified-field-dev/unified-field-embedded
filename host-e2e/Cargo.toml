@@ -1,5 +1,5 @@
 [package]
-name = "{{project-name}}-e2e"
+name = "host-e2e"
 version = "0.1.0"
 edition = "2021"
 description = "IsolatedLab in-process e2e for embedded host platform composition"

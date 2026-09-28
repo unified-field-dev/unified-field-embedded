@@ -23,7 +23,7 @@
 //!
 //! ```rust,ignore
 //! use std::path::Path;
-//! use {{crate_name}}_e2e::{boot_isolated_lab, install_lab_env, IsolatedLab, scenarios};
+//! use host_e2e::{boot_isolated_lab, install_lab_env, IsolatedLab, scenarios};
 //!
 //! async fn smoke() -> anyhow::Result<()> {
 //!     assert_eq!(
@@ -60,7 +60,7 @@ pub mod scenarios {
     /// # Examples
     ///
     /// ```rust,ignore
-    /// use {{crate_name}}_e2e::scenarios::HOST_COMPOSITION_BOOT_HAPPY;
+    /// use host_e2e::scenarios::HOST_COMPOSITION_BOOT_HAPPY;
     /// assert_eq!(HOST_COMPOSITION_BOOT_HAPPY, "host-composition-boot-happy");
     /// ```
     pub const HOST_COMPOSITION_BOOT_HAPPY: &str = "host-composition-boot-happy";
@@ -71,7 +71,7 @@ pub mod scenarios {
     /// # Examples
     ///
     /// ```rust,ignore
-    /// use {{crate_name}}_e2e::scenarios::HOST_COMPOSITION_PHOTON_KEY_SAD;
+    /// use host_e2e::scenarios::HOST_COMPOSITION_PHOTON_KEY_SAD;
     /// assert_eq!(HOST_COMPOSITION_PHOTON_KEY_SAD, "host-composition-photon-key-sad");
     /// ```
     pub const HOST_COMPOSITION_PHOTON_KEY_SAD: &str = "host-composition-photon-key-sad";
@@ -85,7 +85,7 @@ pub mod scenarios {
 /// # Examples
 ///
 /// ```rust,ignore
-/// use {{crate_name}}_e2e::DEV_PHOTON_TRANSPORT_KEY;
+/// use host_e2e::DEV_PHOTON_TRANSPORT_KEY;
 /// assert!(!DEV_PHOTON_TRANSPORT_KEY.is_empty());
 /// ```
 pub const DEV_PHOTON_TRANSPORT_KEY: &str = "cGhvdG9uLWRldi10cmFuc3BvcnQta2V5LTMyYnl0ZXM=";
@@ -172,7 +172,7 @@ impl Drop for IsolatedLab {
 ///
 /// ```rust,ignore
 /// use std::path::Path;
-/// use {{crate_name}}_e2e::install_lab_env;
+/// use host_e2e::install_lab_env;
 /// let root = Path::new("/tmp/uf-lab");
 /// install_lab_env(root, true);
 /// println!("lab env pointed at {}", root.display());
@@ -220,7 +220,7 @@ pub fn install_lab_env(root: &Path, with_photon_key: bool) {
 ///
 /// ```rust,ignore
 /// use std::path::PathBuf;
-/// use {{crate_name}}_e2e::boot_valence;
+/// use host_e2e::boot_valence;
 /// let (router, key) = boot_valence(PathBuf::from("data/lab.sqlite3")).await?;
 /// assert!(!key.is_empty());
 /// Ok::<(), anyhow::Error>(())

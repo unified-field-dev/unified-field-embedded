@@ -30,7 +30,7 @@ Builders open parents, connect SQLite, and configure process-global handles. Cra
 1. Implement or depend on the replacement builder (same traits / return shapes the host expects: Chronon scheduler+backend+registry, Boson backend, Photon client, Spectra handle).
 2. Call it from `compose_embedded_platform` in place of the stock `*_uf_embedded` call.
 3. Keep Higgs builder wiring: Chronon, Boson, and Photon still need live handles if product code or platform apps call those subsystems.
-4. Rebuild and run `cargo test -p {{project-name}}-e2e -- --test-threads=1` (or an equivalent IsolatedLab smoke) so composition still boots.
+4. Rebuild and run `cargo test -p host-e2e -- --test-threads=1` (or an equivalent IsolatedLab smoke) so composition still boots.
 
 ## Disable a runtime
 
@@ -46,7 +46,7 @@ Partial disable without those follow-ups leaves boot or first-request failures. 
 
 ## Headless composition
 
-Labs and tests can call `compose_embedded_platform` without HTTP. Shared env install helpers live in `{{project-name}}-e2e` (`install_lab_env`, scenario IDs in that crate’s README).
+Labs and tests can call `compose_embedded_platform` without HTTP. Shared env install helpers live in `host-e2e` (`install_lab_env`, scenario IDs in that crate’s README).
 
 ## Next
 

@@ -40,7 +40,7 @@ Liquid marker.
 
 | Knob | Where it landed |
 |------|-----------------|
-| Kebab project name | Leptos `[workspace.metadata.leptos] name`, `/pkg/*.js`, default Valence DB `data/<name>.sqlite3`, IsolatedLab crate `<name>-e2e` |
+| Kebab project name | Leptos `[workspace.metadata.leptos] name`, `/pkg/*.js`, default Valence DB `data/<name>.sqlite3` |
 | Display title | HTML `title`, WebAuthn `rp_name`, README H1 |
 | GitHub URLs | CONTRIBUTING / SECURITY / CoC |
 
@@ -62,7 +62,7 @@ Always build with `--split` for lazy WASM routes.
 
 ```bash
 CARGO_BUILD_JOBS=1 cargo check -p server --features server-embedded
-cargo test -p my-uf-app-e2e -- --test-threads=1   # use your project-name
+cargo test -p host-e2e -- --test-threads=1
 ```
 
 Maintainer checklist: [VERIFICATION.md](VERIFICATION.md). Upstream template CI

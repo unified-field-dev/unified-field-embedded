@@ -100,7 +100,7 @@ jobs:
         working-directory: ${{ env.GEN_ROOT }}
         run: >
           cargo clippy -p photon-uf-embedded -p boson-uf-embedded
-          -p chronon-uf-embedded -p spectra-uf-embedded -p ${PROJECT_NAME}-e2e
+          -p chronon-uf-embedded -p spectra-uf-embedded -p host-e2e
           --all-targets --locked -- -D warnings
       - name: cargo clippy (server)
         working-directory: ${{ env.GEN_ROOT }}
@@ -132,7 +132,7 @@ jobs:
           cargo test -p app --features ssr,server-embedded --test full_product_surface_hygiene --locked
       - name: Layer 2 IsolatedLab
         working-directory: ${{ env.GEN_ROOT }}
-        run: cargo test -p ${PROJECT_NAME}-e2e --locked -- --test-threads=1
+        run: cargo test -p host-e2e --locked -- --test-threads=1
 
   e2e:
     needs: generate

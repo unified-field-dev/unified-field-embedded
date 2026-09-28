@@ -106,7 +106,7 @@ if [[ "${RUN_TEST_LAB:-0}" == "1" ]]; then
   if [[ ! -f Cargo.lock ]]; then
     cargo generate-lockfile
   fi
-  cargo test -p "${PROJECT_NAME}-e2e" -- --test-threads=1
+  cargo test -p host-e2e -- --test-threads=1
 fi
 
 echo "$GEN_ROOT" > "${DEST}/.gen_root_path"

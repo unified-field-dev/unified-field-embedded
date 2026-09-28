@@ -45,7 +45,7 @@ Add a slice when a new subsystem needs its own logical name. Keep `default` firs
 - Seeds demo counter data when `server-embedded` is on
 
 SQLite embedded defaults `VALENCE_OWNERSHIP_UNIFIED_FETCH=0` in the `server` binary
-`main` and in `{{project-name}}-e2e::install_lab_env` (ownership JOIN fetch path). Set
+`main` and in `host_e2e::install_lab_env` (ownership JOIN fetch path). Set
 the env var yourself before boot when you need a different value; `build_router`
 does not mutate process env.
 
