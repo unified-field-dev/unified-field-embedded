@@ -3122,7 +3122,7 @@ dependencies = [
 [[package]]
 name = "lepton"
 version = "0.1.0"
-source = "git+https://github.com/unified-field-dev/lepton?branch=main#089094034643f345a4809e2372c17b71e57e5fb9"
+source = "git+https://github.com/unified-field-dev/lepton?branch=main#4abb902eeaf014ec325f6e2b42b6766df473e447"
 dependencies = [
  "lepton-host-adapter",
 ]
@@ -3167,7 +3167,7 @@ dependencies = [
 [[package]]
 name = "lepton-auth"
 version = "0.1.0"
-source = "git+https://github.com/unified-field-dev/lepton?branch=main#089094034643f345a4809e2372c17b71e57e5fb9"
+source = "git+https://github.com/unified-field-dev/lepton?branch=main#4abb902eeaf014ec325f6e2b42b6766df473e447"
 dependencies = [
  "anyhow",
  "argon2",
@@ -3257,7 +3257,7 @@ dependencies = [
 [[package]]
 name = "lepton-auth-ui"
 version = "0.1.0"
-source = "git+https://github.com/unified-field-dev/lepton?branch=main#089094034643f345a4809e2372c17b71e57e5fb9"
+source = "git+https://github.com/unified-field-dev/lepton?branch=main#4abb902eeaf014ec325f6e2b42b6766df473e447"
 dependencies = [
  "cfg-if",
  "lepton-auth",
@@ -3275,7 +3275,7 @@ dependencies = [
 [[package]]
 name = "lepton-host-adapter"
 version = "0.1.0"
-source = "git+https://github.com/unified-field-dev/lepton?branch=main#089094034643f345a4809e2372c17b71e57e5fb9"
+source = "git+https://github.com/unified-field-dev/lepton?branch=main#4abb902eeaf014ec325f6e2b42b6766df473e447"
 dependencies = [
  "anyhow",
  "argon2",
@@ -3308,7 +3308,7 @@ dependencies = [
 [[package]]
 name = "lepton-identity"
 version = "0.1.0"
-source = "git+https://github.com/unified-field-dev/lepton?branch=main#089094034643f345a4809e2372c17b71e57e5fb9"
+source = "git+https://github.com/unified-field-dev/lepton?branch=main#4abb902eeaf014ec325f6e2b42b6766df473e447"
 dependencies = [
  "anyhow",
  "argon2",
@@ -3342,7 +3342,7 @@ dependencies = [
 [[package]]
 name = "lepton-sms"
 version = "0.1.0"
-source = "git+https://github.com/unified-field-dev/lepton?branch=main#089094034643f345a4809e2372c17b71e57e5fb9"
+source = "git+https://github.com/unified-field-dev/lepton?branch=main#4abb902eeaf014ec325f6e2b42b6766df473e447"
 dependencies = [
  "async-trait",
  "reqwest",
@@ -3356,7 +3356,7 @@ dependencies = [
 [[package]]
 name = "lepton-smtp"
 version = "0.1.0"
-source = "git+https://github.com/unified-field-dev/lepton?branch=main#089094034643f345a4809e2372c17b71e57e5fb9"
+source = "git+https://github.com/unified-field-dev/lepton?branch=main#4abb902eeaf014ec325f6e2b42b6766df473e447"
 dependencies = [
  "async-trait",
  "hickory-resolver",
@@ -3370,7 +3370,7 @@ dependencies = [
 [[package]]
 name = "lepton-test-support"
 version = "0.1.0"
-source = "git+https://github.com/unified-field-dev/lepton?branch=main#089094034643f345a4809e2372c17b71e57e5fb9"
+source = "git+https://github.com/unified-field-dev/lepton?branch=main#4abb902eeaf014ec325f6e2b42b6766df473e447"
 dependencies = [
  "axum",
  "chrono",
@@ -4961,7 +4961,7 @@ dependencies = [
 [[package]]
 name = "photon-axum"
 version = "0.1.3"
-source = "git+https://github.com/unified-field-dev/photon-leptos?branch=main#e1295c02a51284c5c0468fb4860fb39d43917936"
+source = "git+https://github.com/unified-field-dev/photon-leptos?branch=main#a6bbaea3438896f732058339bb8b54c56e810173"
 dependencies = [
  "axum",
  "futures",
@@ -5030,7 +5030,7 @@ dependencies = [
 [[package]]
 name = "photon-leptos"
 version = "0.1.3"
-source = "git+https://github.com/unified-field-dev/photon-leptos?branch=main#e1295c02a51284c5c0468fb4860fb39d43917936"
+source = "git+https://github.com/unified-field-dev/photon-leptos?branch=main#a6bbaea3438896f732058339bb8b54c56e810173"
 dependencies = [
  "cfg-if",
  "codee",
@@ -5051,7 +5051,7 @@ dependencies = [
 [[package]]
 name = "photon-leptos-macros"
 version = "0.1.3"
-source = "git+https://github.com/unified-field-dev/photon-leptos?branch=main#e1295c02a51284c5c0468fb4860fb39d43917936"
+source = "git+https://github.com/unified-field-dev/photon-leptos?branch=main#a6bbaea3438896f732058339bb8b54c56e810173"
 dependencies = [
  "darling",
  "proc-macro2",
@@ -7406,7 +7406,7 @@ checksum = "b6f5e870be6c3b371b77fe0ee0bafb859fa4964b4404c27de1d380043c4dda20"
 [[package]]
 name = "uf-appearance"
 version = "0.3.0"
-source = "git+https://github.com/unified-field-dev/unified-field-product?branch=main#da837b6b613877748a9b82087a4a815f2c81d852"
+source = "git+https://github.com/unified-field-dev/unified-field-product?branch=main#2f4ae5585fdbd8e935ff4c524f77ac25d2be2d3f"
 dependencies = [
  "icondata",
  "inventory",
@@ -7418,7 +7418,7 @@ dependencies = [
 [[package]]
 name = "uf-apps"
 version = "0.3.0"
-source = "git+https://github.com/unified-field-dev/unified-field-product?branch=main#da837b6b613877748a9b82087a4a815f2c81d852"
+source = "git+https://github.com/unified-field-dev/unified-field-product?branch=main#2f4ae5585fdbd8e935ff4c524f77ac25d2be2d3f"
 dependencies = [
  "crc32fast",
  "icondata",
@@ -7473,7 +7473,7 @@ dependencies = [
 [[package]]
 name = "uf-codegen"
 version = "0.1.0"
-source = "git+https://github.com/unified-field-dev/unified-field-product?branch=main#da837b6b613877748a9b82087a4a815f2c81d852"
+source = "git+https://github.com/unified-field-dev/unified-field-product?branch=main#2f4ae5585fdbd8e935ff4c524f77ac25d2be2d3f"
 dependencies = [
  "anyhow",
  "cargo_metadata",
@@ -7486,7 +7486,7 @@ dependencies = [
 [[package]]
 name = "uf-component-preview"
 version = "0.3.0"
-source = "git+https://github.com/unified-field-dev/unified-field-product?branch=main#da837b6b613877748a9b82087a4a815f2c81d852"
+source = "git+https://github.com/unified-field-dev/unified-field-product?branch=main#2f4ae5585fdbd8e935ff4c524f77ac25d2be2d3f"
 dependencies = [
  "higgs",
  "icondata",
@@ -7518,7 +7518,7 @@ dependencies = [
 [[package]]
 name = "uf-help"
 version = "0.3.0"
-source = "git+https://github.com/unified-field-dev/unified-field-product?branch=main#da837b6b613877748a9b82087a4a815f2c81d852"
+source = "git+https://github.com/unified-field-dev/unified-field-product?branch=main#2f4ae5585fdbd8e935ff4c524f77ac25d2be2d3f"
 dependencies = [
  "async-trait",
  "chrono",
@@ -7540,7 +7540,7 @@ dependencies = [
 [[package]]
 name = "uf-help-macros"
 version = "0.3.0"
-source = "git+https://github.com/unified-field-dev/unified-field-product?branch=main#da837b6b613877748a9b82087a4a815f2c81d852"
+source = "git+https://github.com/unified-field-dev/unified-field-product?branch=main#2f4ae5585fdbd8e935ff4c524f77ac25d2be2d3f"
 dependencies = [
  "darling",
  "proc-macro2",
@@ -7551,7 +7551,7 @@ dependencies = [
 [[package]]
 name = "uf-integrations"
 version = "0.3.0"
-source = "git+https://github.com/unified-field-dev/unified-field-product?branch=main#da837b6b613877748a9b82087a4a815f2c81d852"
+source = "git+https://github.com/unified-field-dev/unified-field-product?branch=main#2f4ae5585fdbd8e935ff4c524f77ac25d2be2d3f"
 dependencies = [
  "icondata",
  "inventory",
@@ -7576,7 +7576,7 @@ dependencies = [
 [[package]]
 name = "uf-notifications"
 version = "0.3.0"
-source = "git+https://github.com/unified-field-dev/unified-field-product?branch=main#da837b6b613877748a9b82087a4a815f2c81d852"
+source = "git+https://github.com/unified-field-dev/unified-field-product?branch=main#2f4ae5585fdbd8e935ff4c524f77ac25d2be2d3f"
 dependencies = [
  "chrono",
  "icondata",
@@ -7683,7 +7683,7 @@ dependencies = [
 [[package]]
 name = "uf-product"
 version = "0.3.0"
-source = "git+https://github.com/unified-field-dev/unified-field-product?branch=main#da837b6b613877748a9b82087a4a815f2c81d852"
+source = "git+https://github.com/unified-field-dev/unified-field-product?branch=main#2f4ae5585fdbd8e935ff4c524f77ac25d2be2d3f"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -7720,7 +7720,7 @@ dependencies = [
 [[package]]
 name = "uf-product-macros"
 version = "0.1.0"
-source = "git+https://github.com/unified-field-dev/unified-field-product?branch=main#da837b6b613877748a9b82087a4a815f2c81d852"
+source = "git+https://github.com/unified-field-dev/unified-field-product?branch=main#2f4ae5585fdbd8e935ff4c524f77ac25d2be2d3f"
 dependencies = [
  "darling",
  "proc-macro2",
@@ -7748,7 +7748,7 @@ dependencies = [
 [[package]]
 name = "uf-search-core"
 version = "0.1.0"
-source = "git+https://github.com/unified-field-dev/unified-field-product?branch=main#da837b6b613877748a9b82087a4a815f2c81d852"
+source = "git+https://github.com/unified-field-dev/unified-field-product?branch=main#2f4ae5585fdbd8e935ff4c524f77ac25d2be2d3f"
 dependencies = [
  "anyhow",
  "serde",
@@ -7916,7 +7916,7 @@ dependencies = [
 [[package]]
 name = "uf-welcome"
 version = "0.3.0"
-source = "git+https://github.com/unified-field-dev/unified-field-product?branch=main#da837b6b613877748a9b82087a4a815f2c81d852"
+source = "git+https://github.com/unified-field-dev/unified-field-product?branch=main#2f4ae5585fdbd8e935ff4c524f77ac25d2be2d3f"
 dependencies = [
  "anyhow",
  "async-trait",
