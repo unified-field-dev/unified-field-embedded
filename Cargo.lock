@@ -6783,7 +6783,7 @@ dependencies = [
 [[package]]
 name = "tag"
 version = "0.1.0"
-source = "git+https://github.com/unified-field-dev/tag?branch=main#a5a48aa0287ab38fdda0ce9ead66183de229d4f3"
+source = "git+https://github.com/unified-field-dev/tag?branch=main#b074b4c570c3c17a4961ecc45f972a6b39177840"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -6808,7 +6808,7 @@ dependencies = [
 [[package]]
 name = "tag-app"
 version = "0.1.0"
-source = "git+https://github.com/unified-field-dev/tag?branch=main#a5a48aa0287ab38fdda0ce9ead66183de229d4f3"
+source = "git+https://github.com/unified-field-dev/tag?branch=main#b074b4c570c3c17a4961ecc45f972a6b39177840"
 dependencies = [
  "chrono",
  "higgs",
