@@ -14,7 +14,7 @@ This host is the shell. Domain behavior lives in uf-app crates (UI) and matching
 | Appearance / branding SSR helpers | `lepton-appearance` in this workspace, or product helpers | Keep Orbital shell in `app` |
 | Host boot / bind / composition | `server` (`platform`, `valence_bootstrap`, `build_router`) | Change only when ops or runtime topology changes |
 
-Reference layout: `counter-app` (UI) + `counter-app-worker` (models, scripts, tasks, topics). Both are git deps in the workspace root `Cargo.toml` (not in-tree directories). Host wiring to copy: `app/src/main_app_routes.rs`, `app/Cargo.toml` features, `app/build.rs` `extra_packages`, and `server/src/lib.rs` (`use counter_app_worker as _` plus boot seed under `server-embedded`). The host seeds the counter singleton and bot users from that worker at boot when `server-embedded` is on.
+Reference layout: `counter-app` (UI) + `counter-app-worker` (models, scripts, tasks, topics). Both are git deps in the workspace root `Cargo.toml` (not in-tree directories). Host wiring to copy: `app/src/main_app_routes.rs`, `app/Cargo.toml` features, `app/build.rs` `extra_packages`, and `server/src/lib.rs` (`use counter_app_worker as _` plus boot seed under `server-embedded`). With `server-embedded` on, the host seeds the counter singleton at boot. Bot users come from the worker's own `ensure-bot-users` Chronon job, which runs on every boot, so the host doesn't seed them too.
 
 ## Leave alone (unless you mean to)
 

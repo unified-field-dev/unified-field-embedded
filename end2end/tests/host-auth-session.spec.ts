@@ -3,6 +3,7 @@ import {
   assertAnonymousShell,
   assertAuthenticatedMenu,
   assertAuthenticatedShell,
+  markWelcomeTourSeen,
   seedVerifiedUser,
   signIn,
   signOut,
@@ -33,6 +34,7 @@ test.describe("EMBED-AUTH host session", () => {
     request,
   }) => {
     const credentials = await seedVerifiedUser(request);
+    await markWelcomeTourSeen(page);
     await signIn(page, credentials, "/welcome");
     await assertAuthenticatedMenu(page);
 

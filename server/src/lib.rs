@@ -540,16 +540,6 @@ async fn build_router_from_platform(
                 Err(e) => log::warn!("[server] counter singleton probe failed: {e}"),
             }
         }
-
-        // Seed counter demo bots after Boson is configured so UserCounter side effects
-        // can enqueue leaderboard notification tasks (mirrors web-app-template boot).
-        #[cfg(feature = "server-embedded")]
-        if let Err(e) =
-            counter_app_worker::scripts::ensure_bot_users::ensure_bot_users_seed(&boot_valence)
-                .await
-        {
-            log::warn!("[server] ensure_bot_users_seed failed: {e}");
-        }
     }
 
     let conf = get_configuration(None)?;
