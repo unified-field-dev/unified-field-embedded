@@ -1,11 +1,20 @@
 //! Integration contracts for host listen address.
 
 use std::net::SocketAddr;
+use std::sync::{Mutex, MutexGuard, PoisonError};
 
 use server::listen_addr;
 
+// Tests share process env; hold this while touching SITE_ADDR / LEPTOS_SITE_ADDR.
+static ENV_LOCK: Mutex<()> = Mutex::new(());
+
+fn lock_listen_env() -> MutexGuard<'static, ()> {
+    ENV_LOCK.lock().unwrap_or_else(PoisonError::into_inner)
+}
+
 #[test]
 fn listen_addr_parses_loopback_happy_path() {
+    let _env = lock_listen_env();
     std::env::remove_var("LEPTOS_SITE_ADDR");
     std::env::set_var("SITE_ADDR", "127.0.0.1:3999");
     let addr = listen_addr().expect("valid SITE_ADDR");
@@ -15,6 +24,7 @@ fn listen_addr_parses_loopback_happy_path() {
 
 #[test]
 fn listen_addr_default_loopback_when_unset() {
+    let _env = lock_listen_env();
     std::env::remove_var("SITE_ADDR");
     std::env::remove_var("LEPTOS_SITE_ADDR");
     let addr = listen_addr().expect("default listen");
@@ -23,6 +33,7 @@ fn listen_addr_default_loopback_when_unset() {
 
 #[test]
 fn listen_addr_garbage_env_errors_sad() {
+    let _env = lock_listen_env();
     std::env::remove_var("LEPTOS_SITE_ADDR");
     std::env::set_var("SITE_ADDR", ":::bad");
     assert!(
