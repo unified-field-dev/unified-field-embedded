@@ -105,7 +105,11 @@ test.describe("EMBED-AUTH host session", () => {
     }
 
     await gotoHydrated(page, "/user/account-settings");
-    await expect(page).toHaveURL(/\/auth\/signin/, { timeout: 60_000 });
+    await assertAnonymousShell(page);
+    await expect(page.getByTestId("auth-required-empty-state")).toBeAttached({
+      timeout: 60_000,
+    });
+    await expect(page.getByTestId("account-settings-container")).toHaveCount(0);
   });
 
   test("E2E-SEED-01-invalid-token-contained", async ({ request }) => {
