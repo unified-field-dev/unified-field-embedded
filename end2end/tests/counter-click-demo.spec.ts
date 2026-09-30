@@ -1,11 +1,12 @@
 import { test, expect } from "@playwright/test";
+import { gotoHydrated } from "./support/hydration";
 
 /**
  * Slim embedded-host demo: open counter, click once, assert the global count increases.
  * Full counter suite lives in unified-field-dev/counter-app.
  */
 test("counter click demo", async ({ page }) => {
-  await page.goto("/counter");
+  await gotoHydrated(page, "/counter");
   await expect(page.getByTestId("counter-container")).toBeVisible({ timeout: 60_000 });
 
   const global = page.getByTestId("global-counter");

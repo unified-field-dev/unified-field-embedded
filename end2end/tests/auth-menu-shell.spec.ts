@@ -1,4 +1,6 @@
 import { test, expect } from "@playwright/test";
+import { markWelcomeTourSeen } from "./support/auth";
+import { gotoHydrated } from "./support/hydration";
 
 /**
  * Light shell check after lepton cycle-break: host injects AppBarUserMenu
@@ -6,7 +8,8 @@ import { test, expect } from "@playwright/test";
  * (user menu items and/or the shell auth dialog).
  */
 test("app bar auth menu is present for anonymous session", async ({ page }) => {
-  await page.goto("/welcome");
+  await markWelcomeTourSeen(page);
+  await gotoHydrated(page, "/welcome");
   await expect(page.getByTestId("user-avatar")).toBeVisible({ timeout: 60_000 });
 
   // Prefer opening the avatar menu; ignore intercepting backdrops.
