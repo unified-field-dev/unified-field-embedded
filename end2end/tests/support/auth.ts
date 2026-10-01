@@ -172,12 +172,21 @@ export async function markWelcomeTourSeen(page: Page): Promise<void> {
   }, WELCOME_TOUR_STEPS);
 }
 
-/** Prove the menu reflects the authenticated host session. */
+/**
+ * Prove the menu reflects the authenticated host session.
+ *
+ * Right after sign-in the app bar can re-render as the session settles, which
+ * drops an open menu. Re-open until the profile entry shows instead of
+ * trusting the first click.
+ */
 export async function assertAuthenticatedMenu(page: Page): Promise<void> {
-  await openUserMenu(page);
-  await expect(page.getByTestId("user-menu-profile")).toBeVisible({
-    timeout: 30_000,
-  });
+  const profile = page.getByTestId("user-menu-profile");
+  await expect(async () => {
+    if (!(await profile.isVisible())) {
+      await openUserMenu(page);
+    }
+    await expect(profile).toBeVisible({ timeout: 5_000 });
+  }).toPass({ timeout: 45_000 });
   await expect(page.getByTestId("user-menu-logout")).toBeAttached({
     timeout: 15_000,
   });
