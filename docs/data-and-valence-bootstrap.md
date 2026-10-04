@@ -32,7 +32,7 @@ Stock logical namespaces on the shared SQLite backend:
 - `photon`
 - `secrets`
 
-Gauge and Neutrino tables also live in this file. Their crates declare dedicated logicals with their own engine ids (`mem:gauge`, `sqlite:neutrino`), so `build_router` registers those keys through `register_storage` instead of a `router_groups` slice.
+Gauge and Neutrino tables also live in this file. Their crates declare dedicated logicals with their own engine ids (`inmemory_mem:gauge`, `sqlite:neutrino`), so `build_router` registers those keys through `register_storage` instead of a `router_groups` slice.
 
 Add a slice when a new subsystem needs its own logical name. Keep `default` first so auth and factories resolve the stock backend key. There is no `gluon` group on this host.
 
