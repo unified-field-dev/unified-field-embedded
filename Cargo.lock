@@ -2111,7 +2111,7 @@ dependencies = [
 [[package]]
 name = "gauge"
 version = "0.1.0"
-source = "git+https://github.com/deathbreakfast/gauge?rev=a7ef3801777c18648db25851410b4b9f8547be0b#a7ef3801777c18648db25851410b4b9f8547be0b"
+source = "git+https://github.com/deathbreakfast/gauge?rev=d3cdc5c09fa12bebcdbb4b4f563e36fded15ea74#d3cdc5c09fa12bebcdbb4b4f563e36fded15ea74"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -4023,7 +4023,7 @@ checksum = "27b02d87554356db9e9a873add8782d4ea6e3e58ea071a9adb9a2e8ddb884a8b"
 [[package]]
 name = "neutrino"
 version = "0.1.0"
-source = "git+https://github.com/deathbreakfast/neutrino?rev=4a34aa3ad95632135864e24f1f69e35ccd67c4cb#4a34aa3ad95632135864e24f1f69e35ccd67c4cb"
+source = "git+https://github.com/deathbreakfast/neutrino?rev=86888dbdd434b5495dccda15d4bd7e4d50ed8343#86888dbdd434b5495dccda15d4bd7e4d50ed8343"
 dependencies = [
  "anyhow",
  "argon2",
@@ -4091,7 +4091,7 @@ dependencies = [
 [[package]]
 name = "neutrino-spectra-telemetry"
 version = "0.1.0"
-source = "git+https://github.com/deathbreakfast/neutrino?rev=4a34aa3ad95632135864e24f1f69e35ccd67c4cb#4a34aa3ad95632135864e24f1f69e35ccd67c4cb"
+source = "git+https://github.com/deathbreakfast/neutrino?rev=86888dbdd434b5495dccda15d4bd7e4d50ed8343#86888dbdd434b5495dccda15d4bd7e4d50ed8343"
 dependencies = [
  "anyhow",
  "chrono",

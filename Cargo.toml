@@ -253,11 +253,11 @@ js-minify = false
 
 # Temporary: dedicated `gauge` / `neutrino` logicals (agent/gauge-neutrino-split forks).
 [patch."https://github.com/unified-field-dev/gauge"]
-gauge = { git = "https://github.com/deathbreakfast/gauge", rev = "a7ef3801777c18648db25851410b4b9f8547be0b" }
+gauge = { git = "https://github.com/deathbreakfast/gauge", rev = "d3cdc5c09fa12bebcdbb4b4f563e36fded15ea74" }
 
 [patch."https://github.com/unified-field-dev/neutrino"]
-neutrino = { git = "https://github.com/deathbreakfast/neutrino", rev = "4a34aa3ad95632135864e24f1f69e35ccd67c4cb" }
-neutrino-spectra-telemetry = { git = "https://github.com/deathbreakfast/neutrino", rev = "4a34aa3ad95632135864e24f1f69e35ccd67c4cb" }
+neutrino = { git = "https://github.com/deathbreakfast/neutrino", rev = "86888dbdd434b5495dccda15d4bd7e4d50ed8343" }
+neutrino-spectra-telemetry = { git = "https://github.com/deathbreakfast/neutrino", rev = "86888dbdd434b5495dccda15d4bd7e4d50ed8343" }
 
 [patch.crates-io]
 uf-valence = { git = "https://github.com/unified-field-dev/valence", branch = "main" }
