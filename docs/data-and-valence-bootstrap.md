@@ -17,7 +17,7 @@ Constant default: `valence_bootstrap::DEFAULT_SQLITE_PATH`. File parents are cre
 1. Resolve `VALENCE_SQLITE_PATH`
 2. Connect `SqliteBackend`
 3. Harden file permissions when not `:memory:`
-4. Register logical backend groups via `router_groups()`
+4. Register logical backend groups via `router_groups()`, plus the Gauge (`gauge`) and Neutrino (`neutrino`) logicals through each crate's `embedded_surreal::register_storage`
 5. Return `BootstrappedValence { router, default_backend_key }`
 
 `default_backend_key` is `router_key("default", SQLITE_ENGINE_ID)` for auth and factories.
@@ -30,8 +30,9 @@ Stock logical namespaces on the shared SQLite backend:
 - `chronon`
 - `boson`
 - `photon`
-- `permissions`
 - `secrets`
+
+Gauge and Neutrino tables also live in this file. Their crates declare dedicated logicals with their own engine ids (`mem:gauge`, `sqlite:neutrino`), so `build_router` registers those keys through `register_storage` instead of a `router_groups` slice.
 
 Add a slice when a new subsystem needs its own logical name. Keep `default` first so auth and factories resolve the stock backend key. There is no `gluon` group on this host.
 

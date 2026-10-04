@@ -36,7 +36,6 @@ pub fn router_groups() -> &'static [&'static [&'static str]] {
         &["chronon"],
         &["boson"],
         &["photon"],
-        &["permissions"],
         &["secrets"],
     ]
 }
@@ -108,19 +107,33 @@ pub async fn db_and_router() -> anyhow::Result<BootstrappedValence> {
         restrict_sqlite_file_permissions(&path)?;
     }
 
-    // Logical names share this backend; add a slice in router_groups() for a new subsystem.
+    let default_backend_key = router_key("default", SQLITE_ENGINE_ID);
+    Ok(BootstrappedValence {
+        router: Arc::new(build_router(backend)),
+        default_backend_key,
+    })
+}
+
+/// Register every logical on the shared SQLite `backend`.
+///
+/// [`router_groups`] covers the subsystem logicals. Gauge and Neutrino declare
+/// their own logicals (`gauge` on the mem engine, `neutrino` on sqlite), so their
+/// `register_storage` helpers add those keys explicitly instead of leaving the
+/// tables on the router's default-backend fallback.
+fn build_router(backend: Arc<dyn DatabaseBackend>) -> DatabaseRouter {
     let mut router = DatabaseRouter::new();
     register_backend_logical_names_slices(
         &mut router,
-        backend,
+        Arc::clone(&backend),
         router_groups(),
         RegisterBackendLogicalNamesOptions::default(),
     );
-    let default_backend_key = router_key("default", SQLITE_ENGINE_ID);
-    Ok(BootstrappedValence {
-        router: Arc::new(router),
-        default_backend_key,
-    })
+    #[cfg(feature = "server-embedded")]
+    {
+        gauge::embedded_surreal::register_storage(&mut router, Arc::clone(&backend));
+        neutrino::embedded_surreal::register_storage(&mut router, backend);
+    }
+    router
 }
 
 /// Ensure the parent directory for a file-backed SQLite path exists.
@@ -185,4 +198,39 @@ pub(crate) fn restrict_sqlite_file_permissions(path: &str) -> anyhow::Result<()>
         }
     }
     Ok(())
+}
+
+#[cfg(all(test, feature = "server-embedded"))]
+mod tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn embedded_router_registers_gauge_and_neutrino_on_shared_store_happy_path() {
+        let backend: Arc<dyn DatabaseBackend> =
+            Arc::new(SqliteBackend::connect(":memory:").await.expect("sqlite"));
+        let router = build_router(Arc::clone(&backend));
+        for key in [
+            gauge::embedded_surreal::schema_router_key(),
+            neutrino::embedded_surreal::schema_router_key(),
+            router_key("default", SQLITE_ENGINE_ID),
+        ] {
+            let resolved = router
+                .resolve(&key)
+                .unwrap_or_else(|e| panic!("{key}: {e}"));
+            assert!(
+                Arc::ptr_eq(&resolved, &backend),
+                "{key} must use the shared store"
+            );
+        }
+    }
+
+    #[tokio::test]
+    async fn embedded_router_drops_permissions_logical_sad() {
+        let backend: Arc<dyn DatabaseBackend> =
+            Arc::new(SqliteBackend::connect(":memory:").await.expect("sqlite"));
+        let router = build_router(backend);
+        assert!(router
+            .resolve(&router_key("permissions", SQLITE_ENGINE_ID))
+            .is_err());
+    }
 }

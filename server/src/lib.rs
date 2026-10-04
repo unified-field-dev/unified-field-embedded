@@ -131,7 +131,7 @@
 //!
 //! [`valence_bootstrap::db_and_router`] connects the process SQLite file and builds a
 //! shared [`valence::DatabaseRouter`] with logical groups (default, chronon, boson,
-//! photon, permissions, secrets). Call it once at boot after Spectra install and
+//! photon, secrets) plus the Gauge and Neutrino logicals. Call it once at boot after Spectra install and
 //! before Chronon/Boson/Photon factories need a router.
 //!
 //! **Prerequisites:** Writable parent for `VALENCE_SQLITE_PATH` (default

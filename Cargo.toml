@@ -251,6 +251,14 @@ js-minify = false
 # parcel_selectors via Orbital's =0.28.2).
 
 
+# Temporary: dedicated `gauge` / `neutrino` logicals (agent/gauge-neutrino-split forks).
+[patch."https://github.com/unified-field-dev/gauge"]
+gauge = { git = "https://github.com/deathbreakfast/gauge", rev = "a7ef3801777c18648db25851410b4b9f8547be0b" }
+
+[patch."https://github.com/unified-field-dev/neutrino"]
+neutrino = { git = "https://github.com/deathbreakfast/neutrino", rev = "4a34aa3ad95632135864e24f1f69e35ccd67c4cb" }
+neutrino-spectra-telemetry = { git = "https://github.com/deathbreakfast/neutrino", rev = "4a34aa3ad95632135864e24f1f69e35ccd67c4cb" }
+
 [patch.crates-io]
 uf-valence = { git = "https://github.com/unified-field-dev/valence", branch = "main" }
 uf-valence-codegen = { git = "https://github.com/unified-field-dev/valence", branch = "main" }

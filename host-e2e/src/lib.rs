@@ -97,7 +97,6 @@ fn router_groups() -> &'static [&'static [&'static str]] {
         &["chronon"],
         &["boson"],
         &["photon"],
-        &["permissions"],
         &["secrets"],
     ]
 }
