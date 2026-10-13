@@ -194,7 +194,7 @@ meson = { git = "https://github.com/unified-field-dev/meson", branch = "main", d
     "scan-pipeline",
     "scan-chronon",
 ] }
-uf-oauth-boot = { git = "https://github.com/unified-field-dev/uf-oauth-boot", branch = "main" }
+uf-lepton-delivery-boot = { git = "https://github.com/unified-field-dev/uf-oauth-boot", package = "uf-lepton-delivery-boot", branch = "main" }
 record-history = { git = "https://github.com/unified-field-dev/record-history", branch = "main", default-features = false }
 record-history-leptos = { git = "https://github.com/unified-field-dev/record-history", branch = "main", default-features = false }
 tag = { git = "https://github.com/unified-field-dev/tag", branch = "main", default-features = false }

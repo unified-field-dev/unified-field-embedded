@@ -550,42 +550,27 @@ async fn build_router_from_platform(
 
     let public_base =
         std::env::var("UF_PUBLIC_BASE_URL").unwrap_or_else(|_| "http://127.0.0.1:3000".to_string());
-    let auth_services = {
+    let (auth_services, delivery) = {
         use lepton_auth::services::LeptonAuthServicesBuilder;
-        use neutrino::vault::store_from_valence;
-        use uf_oauth_boot::resolve_oauth_config_from_neutrino;
+        use uf_lepton_delivery_boot::{install_delivery, DeliveryOptions};
 
-        let mut builder = LeptonAuthServicesBuilder::new().public_base_url(public_base.clone());
-        // Confirm-account OTP: noop here — swap to Twilio (or other) for live delivery.
-        // See docs/auth-and-session.md § Email and SMS delivery.
-        builder = builder.email(
-            lepton_smtp::EmailServiceBuilder::new()
-                .noop()
-                .build()
-                .map_err(|e| anyhow::anyhow!("email service: {e}"))?,
-        );
-        builder = builder.sms(
-            lepton_sms::SmsServiceBuilder::new()
-                .noop()
-                .build()
-                .map_err(|e| anyhow::anyhow!("sms service: {e}"))?,
-        );
-        let oauth_valence = valence::Valence::builder()
+        // Email, SMS and OAuth settings live in Neutrino (seeded once from env) and
+        // change without a restart. The boot Valence is the System context this
+        // host started with, as the OAuth resolve it replaces used.
+        let delivery_valence = valence::Valence::builder()
             .database_router(valence_router.clone())
             .default_backend_key(default_backend_key.clone())
             .with_actor(valence::Actor::initialize_system_context())
             .build()
-            .map_err(|e| anyhow::anyhow!("oauth boot valence: {e}"))?;
-        let store = store_from_valence(oauth_valence);
-        match resolve_oauth_config_from_neutrino(&store, &public_base, true).await {
-            Ok(Some(cfg)) => {
-                builder = builder.oauth(cfg.into_lepton());
-            }
-            Ok(None) => {}
-            Err(e) => {
-                log::warn!("[server] OAuth Neutrino resolve skipped: {e}");
-            }
-        }
+            .map_err(|e| anyhow::anyhow!("delivery boot valence: {e}"))?;
+        let delivery = install_delivery(&delivery_valence, DeliveryOptions::new(public_base.clone()))
+            .await
+            .map_err(|e| anyhow::anyhow!("install delivery settings: {e}"))?;
+        let mut builder = LeptonAuthServicesBuilder::new()
+            .public_base_url(public_base.clone())
+            .email(delivery.email())
+            .sms(delivery.sms())
+            .oauth_handle(delivery.oauth());
         #[cfg(feature = "server-embedded")]
         {
             // Prefer host origin; fall back to loopback for local embedded.
@@ -604,12 +589,14 @@ async fn build_router_from_platform(
                 rp_name: "{{app_title}}".into(),
             });
         }
-        Arc::new(
+        let services = Arc::new(
             builder
                 .build()
                 .map_err(|e| anyhow::anyhow!("LeptonAuthServices build: {e}"))?,
-        )
+        );
+        (services, delivery)
     };
+    let delivery_backend = delivery.settings_backend();
 
     let allowed_ws_origins = ws_origin_allowlist(&public_base);
     #[cfg(feature = "e2e-host-conformance")]
@@ -659,6 +646,7 @@ async fn build_router_from_platform(
     let state_for_shell = state.clone();
     let state_for_ctx = state.clone();
     let auth_services_for_ctx = auth_services.clone();
+    let delivery_backend_for_ctx = delivery_backend.clone();
 
     // `/health` stays off AuthManagerLayer so probes get a plain 2xx.
     #[cfg_attr(not(feature = "e2e-host-conformance"), allow(unused_mut))]
@@ -730,6 +718,7 @@ async fn build_router_from_platform(
                 provide_context(spectra.clone());
                 provide_context(file_store_for_ctx.clone());
                 lepton_auth::services::provide_auth_services(auth_services_for_ctx.clone());
+                provide_context(delivery_backend_for_ctx.clone());
             },
             move || {
                 let options = LeptosOptions::from_ref(&state_for_shell);
