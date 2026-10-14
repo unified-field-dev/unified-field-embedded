@@ -563,9 +563,10 @@ async fn build_router_from_platform(
             .with_actor(valence::Actor::initialize_system_context())
             .build()
             .map_err(|e| anyhow::anyhow!("delivery boot valence: {e}"))?;
-        let delivery = install_delivery(&delivery_valence, DeliveryOptions::new(public_base.clone()))
-            .await
-            .map_err(|e| anyhow::anyhow!("install delivery settings: {e}"))?;
+        let delivery =
+            install_delivery(&delivery_valence, DeliveryOptions::new(public_base.clone()))
+                .await
+                .map_err(|e| anyhow::anyhow!("install delivery settings: {e}"))?;
         let mut builder = LeptonAuthServicesBuilder::new()
             .public_base_url(public_base.clone())
             .email(delivery.email())
