@@ -25,7 +25,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         "meson-app".to_string(),
         "record-history-leptos".to_string(),
     ];
-    // Marketing stays on unified-field-site. Gluon/Nucleus/setup-wizard stay out.
+    // Marketing stays on a separate site. Gluon/Nucleus/setup-wizard stay out.
     let excluded_packages = vec![
         "setup-wizard-app".to_string(),
         "gluon-app".to_string(),

@@ -10,7 +10,7 @@
 # Plain `wasm-bindgen` must NOT be used after a split build — it leaves broken
 # placeholder imports and overwrites the split-fixed JS.
 #
-# Starter profile: `server-embedded` (backends + counter/auth/tag). Hosted product: unified-field-site.
+# Starter profile: `server-embedded` (backends + counter/auth/tag). The hosted product runs on a separate host.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"

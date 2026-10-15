@@ -10,8 +10,8 @@ Boson, Spectra, Gauge, Neutrino, user, notifications) always compiled in.
 GitHub **Use this template** copies Liquid markers as-is and does not fill in
 `project-name` / `app_title` — prefer cargo-generate.
 
-Public marketing and Coming Soon live in
-[`unified-field-site`](https://github.com/unified-field-dev/unified-field-site).
+Public marketing and Coming Soon pages live in a separate marketing site, not
+in this template.
 
 ## Create a host
 

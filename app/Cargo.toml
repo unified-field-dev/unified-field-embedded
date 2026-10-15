@@ -2,7 +2,7 @@
 name = "app"
 version = "0.1.0"
 edition = "2021"
-description = "Embedded {{app_title}} Leptos route shell (full product UI always on; marketing lives on unified-field-site)"
+description = "Embedded {{app_title}} Leptos route shell (full product UI always on; marketing lives on a separate site)"
 license = "MIT"
 
 [dependencies]
@@ -52,7 +52,7 @@ uf-codegen = { workspace = true }
 [features]
 default = []
 # Full product: platform admin apps + counter/auth/tag/welcome/orbital.
-# Marketing and Coming Soon live on unified-field-site.
+# Marketing and Coming Soon live on a separate marketing site.
 hydrate = [
     "leptos/hydrate",
     "orbital/hydrate",

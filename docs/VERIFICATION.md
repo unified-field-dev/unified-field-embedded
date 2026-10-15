@@ -3,7 +3,7 @@
 Re-run after code or wiring changes on a **generated** host (Liquid template
 source does not build in place). Upstream template maintainers: run
 `scripts/verify-template-generate.sh` first, then the gates below inside the
-scratch tree. Marketing and Coming Soon live on `unified-field-site`.
+scratch tree. Marketing and Coming Soon live on a separate marketing site.
 
 Playwright under `end2end/` is **UI** smoke and is **not** the Layer 2 gate
 (audit requires backend IsolatedLab / in-process e2e only).

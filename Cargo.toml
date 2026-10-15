@@ -237,7 +237,7 @@ lib-features = ["hydrate"]
 # Hydrate WASM uses the size-tuned profile above (pairs with `cargo leptos … --split`).
 lib-profile-release = "wasm-release"
 # Full-product host: platform runtimes + always-on admin UI.
-# Marketing / Coming Soon: see unified-field-site.
+# Marketing / Coming Soon: separate marketing site, not this template.
 # Avoid cargo-leptos overwriting .cargo/config.toml rustflags (getrandom + erase_components).
 disable-erase-components = true
 # SWC minify breaks wasm-split import namespaces (hydrate fails with

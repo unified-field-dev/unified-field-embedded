@@ -2,7 +2,7 @@
 //!
 //! Boots SQLite adapters in process, builds [`HiggsConfig`], then serves the product
 //! shell (platform admin apps, counter, auth, tags, welcome) on one port. Marketing
-//! and Coming Soon stay on `unified-field-site`; this template is the customize /
+//! and Coming Soon stay on a separate marketing site; this template is the customize /
 //! grow-your-app skeleton.
 //!
 //! ## Features

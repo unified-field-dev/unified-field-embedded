@@ -10,7 +10,7 @@ The product route table is `app::main_app_routes::MainAppRouteChildren`. Edit th
 - Auth: `LeptonAuthRoutes`
 - Platform admin: notifications, user, Valence, Chronon, Photon, Spectra, Boson, Gauge (permissions), Neutrino (secrets)
 
-Catch-all `/*any` → `HostNotFoundPage` (product 404). Marketing and Coming Soon stay on `unified-field-site`.
+Catch-all `/*any` → `HostNotFoundPage` (product 404). Marketing and Coming Soon stay on a separate marketing site.
 
 `app/build.rs` feeds `uf_codegen::generate_registered_routes` so Orbital appearance / page-view tracking see the same package set. Keep `extra_packages` and `MainAppRouteChildren` in sync when you add or drop a uf-app.
 

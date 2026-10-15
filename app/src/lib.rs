@@ -6,7 +6,7 @@
 //! work belongs in uf-app crates and Orbital docs; keep this crate thin.
 //!
 //! Unmatched paths render [`HostNotFoundPage`](not_found::HostNotFoundPage).
-//! Marketing and Coming Soon live on `unified-field-site`.
+//! Marketing and Coming Soon live on a separate marketing site.
 //!
 //! ## Features
 //!

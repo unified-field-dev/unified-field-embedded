@@ -22,7 +22,7 @@ Reference layout: `counter-app` (UI) + `counter-app-worker` (models, scripts, ta
 - `ProcessValenceFactory` internal vs external vs Higgs factories (actor JSON security boundary)
 - `app::shell` / `App` Orbital chrome and `frontend::hydrate` (stock document / WASM entry; ordinary product work mounts uf-apps via `MainAppRouteChildren`)
 - Generated `OUT_DIR` route tables from `uf_codegen` (edit `MainAppRouteChildren` and `build.rs` instead)
-- Marketing / Coming Soon (lives on `unified-field-site`)
+- Marketing / Coming Soon (lives on a separate marketing site)
 
 ## Growing a first-party app
 

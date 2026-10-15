@@ -2,7 +2,7 @@
 //!
 //! Counter, welcome, auth, apps, tags, orbital preview, and all platform admin
 //! apps. Unknown paths are 404. Marketing and Coming Soon live on
-//! `unified-field-site`. **This is the primary customize surface** for adding or
+//! a separate marketing site. **This is the primary customize surface** for adding or
 //! removing uf-apps: edit the children below and matching Cargo features/deps.
 
 use leptos::prelude::*;
