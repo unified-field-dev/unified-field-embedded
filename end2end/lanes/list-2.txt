@@ -1,0 +1,4 @@
+host-auth-session.spec.ts › EMBED-AUTH host session › EMBED-AUTH-01-session-propagates-across-apps
+host-auth-session.spec.ts › EMBED-AUTH host session › EMBED-AUTH-02-invalid-signin-stays-anonymous
+host-auth-session.spec.ts › EMBED-AUTH host session › EMBED-AUTH-10-logout-denies-all-app-families
+host-auth-session.spec.ts › EMBED-AUTH host session › E2E-SEED-01-invalid-token-contained

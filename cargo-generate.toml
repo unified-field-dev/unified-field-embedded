@@ -15,11 +15,15 @@ ignore = [
     "end2end/node_modules",
     "end2end/playwright-report",
     "end2end/test-results",
+    "end2end/lanes-out",
     "**/*.sqlite3",
     "**/*.sqlite3-*",
 ]
 exclude = [
     "scripts/verify-template-generate.sh",
+    "end2end/run-lanes.sh",
+    "end2end/lanes.py",
+    "end2end/lanes/**",
     "public/**",
     ".genignore",
 ]

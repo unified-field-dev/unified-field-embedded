@@ -1,0 +1,21 @@
+platform-routes.spec.ts › EMBED-RT platform ownership › EMBED-RT-10-platform-root-ownership
+platform-routes.spec.ts › EMBED-RT platform ownership › EMBED-RT-11-schema-and-dashboard-collision-contained
+platform-routes.spec.ts › EMBED-RT platform ownership › pw-l5-spectra-auth-gate-anonymous
+platform-routes.spec.ts › EMBED-RT platform ownership › pw-l5-spectra-schema-index-anonymous
+route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-explicit-404
+route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-counter-high-scores
+route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-welcome-admin
+route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-apps
+route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-apps-counter
+route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-orbital-button
+route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-user-appearance
+route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-auth-reset-confirm
+route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-chronon-run
+route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-photon-events
+route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-spectra
+route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-spectra-schema-detail
+route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-spectra-metric-explore
+route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-boson-task
+route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-boson-run
+route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-permissions
+route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-unknown-top-level
