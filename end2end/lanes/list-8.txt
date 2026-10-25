@@ -1,28 +1,28 @@
 auth-menu-shell.spec.ts › app bar auth menu is present for anonymous session
-counter-click-demo.spec.ts › counter click demo
 host-fallbacks.spec.ts › EMBED-RT host fallbacks › EMBED-RT-52-explicit-and-catchall-use-404
 photon-shell.spec.ts › e2e.l5.photon_shell_smoke
-route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-counter
-route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-orbital
-route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-auth-root
+route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-root-redirect
+route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-explicit-404
+route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-apps-counter
+route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-user-profile
+route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-user-account-settings
+route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-user-confirm-account
+route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-auth-signin
 route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-auth-signup
+route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-auth-oauth-callback
+route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-auth-reset-confirm
 route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-valence
 route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-valence-schema
 route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-valence-schema-detail
 route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-valence-iter-run
-route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-valence-traits
-route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-valence-iters
-route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-chronon
+route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-valence-trait
 route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-photon
-route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-photon-topic
-route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-photon-subscriptions
-route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-photon-subscription
-route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-photon-event
-route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-spectra-schema
-route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-permission-detail
-route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-permission-create
-route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-domain-create
+route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-boson-tasks
+route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-boson-task-config
+route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-permission
+route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-permissions
 route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-permission-group
-route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-permission-group-create
+route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-permission-request
 route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-secrets
-route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-tag-create
+route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-tag-detail
+route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-unknown-top-level

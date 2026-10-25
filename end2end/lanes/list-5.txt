@@ -1,19 +1,17 @@
-diagnostics-unit.spec.ts › TM-07/SM-04 diagnostics redaction › stripQuery drops search and hash
-diagnostics-unit.spec.ts › TM-07/SM-04 diagnostics redaction › stripQuery keeps pathname for relative-looking URLs
 meson-my-files.spec.ts › Meson My Files › meson-my-files-list-happy
 meson-my-files.spec.ts › Meson My Files › meson-my-files-anonymous-gate-sad
-route-smoke.spec.ts › EMBED-RT route smoke matrix › EMBED-RT-00-route-contract-ids-and-paths-are-unique
-route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-orbital-components
-route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-user-account-settings
-route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-auth-signin
-route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-valence-deletions
-route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-chronon-scripts
+route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-counter
+route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-counter-high-scores
+route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-counter-admin
+route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-valence-iters
+route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-chronon
+route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-chronon-runs
 route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-photon-topics
-route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-permission
+route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-photon-subscriptions
+route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-photon-subscription
+route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-spectra-schema-detail
+route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-domain-create
 route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-permission-groups
-route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-permission-requests
-route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-secrets-acl
 route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-meson
-route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-meson-file-detail
 route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-tag
-route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-unknown-nested
+route-smoke.spec.ts › EMBED-RT route smoke matrix › embed-tag-create

@@ -3,7 +3,7 @@ import { defineConfig, devices } from "@playwright/test";
 export default defineConfig({
   testDir: "./tests",
   // Host suite hydrates a large WASM graph; Meson virus-scan waits on Boson promote.
-  timeout: 600_000,
+  timeout: 90_000,
   expect: { timeout: 15_000 },
   fullyParallel: false,
   retries: 0,
