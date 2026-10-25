@@ -139,7 +139,7 @@ run_lane() {
     if [ "$serial" = 0 ] && [ "$targeted" = 0 ]; then
       if [ -f "$o/list.txt" ]; then args=(--test-list="$o/list.txt"); else args=(--shard="$i/$lanes"); fi
     fi
-    env "${BASE_URL_VAR:-PLAYWRIGHT_BASE_URL}=http://127.0.0.1:$port" \
+    env "${BASE_URL_VAR:-PLAYWRIGHT_BASE_URL}=http://${BASE_HOST:-127.0.0.1}:$port" \
         PLAYWRIGHT_JSON_OUTPUT_FILE="$o/results.json" \
       timeout --kill-after=30 "$budget" \
       npx playwright test --workers=1 --retries=0 --reporter=list,json --output="$o/test-results" \
