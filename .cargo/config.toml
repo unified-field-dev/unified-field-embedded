@@ -3,3 +3,13 @@
 # does not set RUSTFLAGS (which would clobber this file).
 [target.wasm32-unknown-unknown]
 rustflags = ["--cfg", "getrandom_backend=\"wasm_js\""]
+
+[env]
+# `--split` builds the ssr binary and the hydrate lib as two separate cargo
+# invocations. server_fn's default server-fn URL hash keys on
+# CARGO_MANIFEST_DIR, which can resolve to a different git-checkout path per
+# invocation even when both lock to the same commit — the ssr side then
+# registers a route the client-compiled hydrate side never requests (a bare,
+# bodiless 405 the client can't tell apart from a real error). Pin a stable
+# key so both sides hash the same route for the same function.
+SERVER_FN_OVERRIDE_KEY = "{{project-name}}"

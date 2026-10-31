@@ -204,6 +204,7 @@ use axum::error_handling::HandleErrorLayer;
 use axum::extract::{DefaultBodyLimit, FromRef};
 use axum::http::{header, HeaderValue, StatusCode};
 use axum::middleware::from_fn;
+use axum::response::IntoResponse;
 use axum::{BoxError, Extension, Router};
 use axum_login::AuthManagerLayerBuilder;
 use higgs::HiggsConfig;
@@ -223,6 +224,7 @@ use std::time::Duration;
 use tower::limit::ConcurrencyLimitLayer;
 use tower::timeout::TimeoutLayer;
 use tower::ServiceBuilder;
+use tower_http::catch_panic::CatchPanicLayer;
 use tower_http::compression::CompressionLayer;
 use tower_http::services::{ServeDir, ServeFile};
 use tower_http::set_header::SetResponseHeaderLayer;
@@ -329,6 +331,29 @@ impl HasPhoton for AppState {
             .iter()
             .any(|allowed| allowed == origin)
     }
+}
+
+/// Log a caught panic and turn it into a body-bearing 500.
+///
+/// Without this, a panicking handler (a server fn included) reaches the client
+/// as a bare, bodiless 500: `server_fn`'s client can't decode that as either a
+/// success or an error payload, and the resulting "missing delimiter" message
+/// hides the real panic. The panic message lands in the `log` sink this host
+/// already reads (`tracing::error!`'s default panic log does not, since this
+/// host has no tracing-to-log bridge).
+fn log_panic_response(err: Box<dyn std::any::Any + Send + 'static>) -> axum::response::Response {
+    let details = if let Some(s) = err.downcast_ref::<String>() {
+        s.clone()
+    } else if let Some(s) = err.downcast_ref::<&str>() {
+        (*s).to_string()
+    } else {
+        "unknown panic payload".to_string()
+    };
+    log::error!("[server] request handler panicked: {details}");
+    // Log the panic message above; never put it in the response body — a
+    // caught panic can carry internal state the client has no business
+    // seeing (and server_fn's client only needs a non-empty, decodable body).
+    (StatusCode::INTERNAL_SERVER_ERROR, "internal error").into_response()
 }
 
 /// Build the Photon WebSocket `Origin` allowlist for [`HasPhoton`].
@@ -771,7 +796,11 @@ async fn build_router_from_platform(
                  connect-src 'self' ws: wss:; font-src 'self'; frame-ancestors 'none'; \
                  base-uri 'self'; form-action 'self'",
             ),
-        ));
+        ))
+        // Outermost: a panic anywhere below (a server fn handler included) would
+        // otherwise reach the client as a bare, bodiless 5xx that `server_fn`'s
+        // client can't decode ("missing delimiter"); log it and return a body.
+        .layer(CatchPanicLayer::custom(log_panic_response));
     if secure_cookies {
         protected = protected.layer(SetResponseHeaderLayer::if_not_present(
             header::STRICT_TRANSPORT_SECURITY,
